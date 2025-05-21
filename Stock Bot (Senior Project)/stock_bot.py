@@ -27,20 +27,27 @@ import requests, PyPDF2
 # - requests: to download files from the web
 # - PyPDF2: (currently unused) would allow reading PDF content programmatically
 
+# Prompt user for input
+year = input("Enter the year (2021-2025): ")
+
+# Validate user input
+if year not in {'2021', '2022', '2023', '2024', '2025'}:
+    raise ValueError("Invalid year. Please enter a year between 2021 and 2025.")
+
 # URL of the ZIP file containing financial disclosures from 2021
-zip_file_url = 'https://disclosures-clerk.house.gov/public_disc/financial-pdfs/2021FD.ZIP'
+zip_file_url = f'https://disclosures-clerk.house.gov/public_disc/financial-pdfs/{year}FD.zip'
 
 # Base URL for accessing individual PDF reports by document ID
-pdf_file_url = 'https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2021/'
+pdf_file_url = 'https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/{year}/'
+
+
+# Define the local filename to save the downloaded ZIP file
+zipfile_name = f'{year}.zip'
+metadata_txt_filename = f'{year}FD.txt'
 
 # Send an HTTP GET request to download the ZIP file
 r = requests.get(zip_file_url)
-
-# Define the local filename to save the downloaded ZIP file
-zipfile_name = '2021.zip'
-
-# Save the downloaded ZIP file in binary write mode
-with open(zipfile_name, 'wb') as f:
+with open(zipfile_name, 'wb') as f: # Save the downloaded ZIP file in binary write mode
     f.write(r.content)  # Write the entire content of the response to disk
 
 # Open and extract all contents of the ZIP archive into the current directory
@@ -48,9 +55,10 @@ with zipfile.ZipFile(zipfile_name) as z:
     z.extractall('.')  # '.' means extract to the current folder
 
 # Open the extracted tab-delimited text file which contains metadata about disclosures
-with open('2021FD.txt') as f:
+with open(metadata_txt_filename) as f:
     for line in csv.reader(f, delimiter='\t'):
-        pass  # Currently no active logic; this just iterates over each disclosure entry
+        pass  
+        # Currently no active logic; this just iterates over each disclosure entry
 
         # The following blocks are examples of how to filter and download specific PDF reports
         # Each block checks for a specific member of Congress and downloads their disclosure PDF
@@ -79,4 +87,5 @@ with open('2021FD.txt') as f:
         # 2. Extract the document ID and date.
         # 3. Construct the URL and download the PDF.
         # 4. Save it using the document ID as filename.
-
+    else:
+        print(f"Download failed: HTTP {r.status_code} for {zip_file_url}")
