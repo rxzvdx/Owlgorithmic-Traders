@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Bot</title>
+</head>
+<body>
+    <h2>Select a Year</h2>
+    <form method="POST" action="{{ url_for('download') }}">
+        {% for y in ['2021', '2022', '2023', '2024', '2025'] %}
+            <button type="submit" name="year" value="{{ y }}">{{ y }}</button>
+        {% endfor %}
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul>
+            {% for category, msg in messages %}
+                <li style="color: {{ 'green' if category == 'success' else 'red'}}">{{ msg }}</li>"
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+
+<style>
+    .green { color: green; }
+    .red { color: red; }
+</style>
+
+</html>
