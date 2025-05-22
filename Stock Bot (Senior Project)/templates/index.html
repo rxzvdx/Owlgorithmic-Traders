@@ -4,27 +4,35 @@
     <title>Stock Bot</title>
 </head>
 <body>
-    <h2>Select a Year</h2>
-    <form method="POST" action="{{ url_for('download') }}">
-        {% for y in ['2021', '2022', '2023', '2024', '2025'] %}
-            <button type="submit" name="year" value="{{ y }}">{{ y }}</button>
-        {% endfor %}
-    </form>
+    {% if not google.authorized %}
+        <h2>Welcome to Stock Bot</h2>
+        <a href="{{ url_for('login') }}">Log in with Google</a>
+        <a href="{{ url_for('login') }}">Sign up with Google</a>
+    {% else %}
+        <p>Logged in as: {{ user_email }}</p>
+        <a href="{{ url_for('logout') }}">Log Out</a>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <ul>
-            {% for category, msg in messages %}
-                <li style="color: {{ 'green' if category == 'success' else 'red'}}">{{ msg }}</li>"
+        <h2>Select a Year</h2>
+        <form method="POST" action="{{ url_for('download') }}">
+            {% for y in ['2021', '2022', '2023', '2024', '2025'] %}
+                <button type="submit" name="year" value="{{ y }}">{{ y }}</button>
             {% endfor %}
-        </ul>
-        {% endif %}
-    {% endwith %}
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <ul>
+                {% for category, msg in messages %}
+                    <li style="color: {{ 'green' if category == 'success' else 'red' }}">{{ msg }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
 </body>
 
 <style>
     .green { color: green; }
     .red { color: red; }
 </style>
-
 </html>
