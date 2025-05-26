@@ -71,7 +71,7 @@ nav ul li a:hover::after {
     transition: 0.5s;
 }
 
-/* ---------- Hero Section (Home) ---------- */
+/* ---------- Hero ---------- */
 .header-content {
     margin-top: 80px;
     flex-direction: column;
@@ -115,7 +115,7 @@ nav ul li a:hover::after {
     margin-bottom: 30px;
 }
 
-/* ---------- Auth Section (Login/Signup) ---------- */
+/* ---------- Auth ---------- */
 .auth-buttons {
     display: flex;
     justify-content: flex-end;
@@ -175,7 +175,7 @@ nav ul li a:hover::after {
     color: #121212;
 }
 
-/* ---------- Page Sections (About, Services, Contact) ---------- */
+/* ---------- Pages ---------- */
 .page-section {
     padding: 100px 10%;
     border-top: 1px solid #333;
@@ -199,7 +199,7 @@ nav ul li a:hover::after {
     margin-bottom: 20px;
 }
 
-/* ---------- Services List Styling ---------- */
+/* ---------- Services ---------- */
 .services-list {
     list-style: none;
     padding: 0;
@@ -211,7 +211,7 @@ nav ul li a:hover::after {
     font-family: 'Poppins', sans-serif;
 }
 
-/* Make <strong> noticeably larger */
+
 .services-list li strong {
     display: block;
     font-size: 22px;
@@ -220,7 +220,7 @@ nav ul li a:hover::after {
     color: #fff;
 }
 
-/* Make <span> smaller with good spacing */
+
 .services-list li span {
     display: block;
     font-size: 15px;
