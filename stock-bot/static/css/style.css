@@ -1,0 +1,252 @@
+/* ---------- Base Reset ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* ---------- Theme ---------- */
+body.dark-theme {
+    background: #141414;
+    color: white;
+}
+
+/* ---------- Header ---------- */
+#header {
+    width: 100%;
+    height: auto;
+}
+
+.container {
+    padding: 10px 10%;
+}
+
+/* ---------- Navigation ---------- */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.logo {
+    width: 250px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 10px 20px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    position: relative;
+}
+
+nav ul li a::after {
+    content: '';
+    width: 0%;
+    height: 3px;
+    background: #00ff88;
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+}
+
+nav ul li a:hover::after {
+    width: 100%;
+    transition: 0.5s;
+}
+
+/* ---------- Hero Section (Home) ---------- */
+.header-content {
+    margin-top: 80px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    display: flex;
+}
+
+.motto {
+    font-size: 30px;
+    color: #ccc;
+    line-height: 1.6;
+    text-align: left;
+    margin-top: 40px;
+    justify-content: center;
+}
+
+.hero-title {
+    font-size: 40px;
+    text-align: right;
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
+
+.hero-title span {
+    color: #00ff88;
+}
+
+.hero-subtext {
+    font-size: 20px;
+    text-align: right;
+    margin-bottom: 20px;
+    color: #ddd;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+/* ---------- Auth Section (Login/Signup) ---------- */
+.auth-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 8px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+.primary {
+    background-color: #00ff88;
+    color: #121212;
+}
+
+.primary:hover {
+    background-color: #00cc70;
+}
+
+.secondary {
+    background-color: #007bff;
+    color: white;
+}
+
+.secondary:hover {
+    background-color: #005fcc;
+}
+
+.logout {
+    background-color: #ff4f4f;
+    color: white;
+}
+
+.logout:hover {
+    background-color: #d93636;
+}
+
+.year {
+    background-color: #2e2e2e;
+    color: #00ff88;
+    border: 1px solid #00ff88;
+}
+
+.year:hover {
+    background-color: #00ff88;
+    color: #121212;
+}
+
+/* ---------- Page Sections (About, Services, Contact) ---------- */
+.page-section {
+    padding: 100px 10%;
+    border-top: 1px solid #333;
+    text-align: center;
+}
+
+.page-section h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #00ff88;
+}
+
+.page-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.page-section li {
+    font-size: 18px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+/* ---------- Services List Styling ---------- */
+.services-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.services-list li {
+    margin-bottom: 30px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Make <strong> noticeably larger */
+.services-list li strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+/* Make <span> smaller with good spacing */
+.services-list li span {
+    display: block;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #ccc;
+}
+
+/* ---------- Misc ---------- */
+.highlight {
+    color: #00ff88;
+}
+
+.flash-messages {
+    list-style-type: none;
+    margin-top: 16px;
+}
+
+.flash-messages li.success {
+    color: #00ff88;
+}
+
+.flash-messages li.error {
+    color: #ff6b6b;
+}
+
+.user-info {
+    margin: 16px 0;
+    font-size: 16px;
+}

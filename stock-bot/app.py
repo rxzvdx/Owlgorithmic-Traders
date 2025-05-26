@@ -12,6 +12,9 @@ from utils.login import google_blueprint
 from flask_dance.contrib.google import google
 from flask_dance.consumer import oauth_authorized
 
+#OAuth imports
+from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
+
 # Initilize Flask app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -24,9 +27,14 @@ app.register_blueprint(google_blueprint, url_prefix="/login")
 def index():
     user_email = None
     if google.authorized:
-        resp = google.get('/oauth2/v1/userinfo')
-        if resp.ok:
-            user_email = resp.json().get('email')
+        try:
+            resp = google.get('/oauth2/v1/userinfo')
+            if resp.ok:
+                user_email = resp.json().get('email')
+        except TokenExpiredError:
+            # OAuth token expired, redirect to login again
+            flash("Session expired. Please log in again.", "error")
+            return redirect(url_for("google.login"))
     return render_template('index.html', user_email=user_email, google=google)
 
 # Login route intiates the Google OAuth process
