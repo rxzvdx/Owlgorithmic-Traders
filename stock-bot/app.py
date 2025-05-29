@@ -4,7 +4,7 @@ import yfinance as yf
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for local testing
 
 # Flask framework imports
-from flask import session, Flask, render_template, request, redirect, url_for, flash, current_app, after_this_request
+from flask import session, Flask, render_template, request, redirect, url_for, flash, current_app, after_this_request, send_file
 
 # Custom Utilities
 from utils.downloader import download_disclosures
@@ -85,9 +85,22 @@ def download():
         return redirect(url_for('index'))
 
     year = request.form['year']
-    success, message = download_disclosures(year)
-    flash(message, 'success' if success else 'error')
-    return redirect(url_for('index'))
+    file_buffer, message = download_disclosures(year)
+    
+    if file_buffer is None:
+        flash(message, 'error')
+        return redirect(url_for('index'))
+    
+    try:
+        return send_file(
+            file_buffer,
+            as_attachment=True,
+            download_name=message,
+            mimetype='application/zip'
+        )
+    except Exception as e:
+        flash(f"Download failed: {str(e)}", 'error')
+        return redirect(url_for('index'))
 
 @app.route('/chart_view')
 def chart_list():
