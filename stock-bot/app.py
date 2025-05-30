@@ -17,6 +17,10 @@ from flask_dance.consumer import oauth_authorized
 #OAuth imports
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 
+# Parsing logic
+from flask import Flask, render_template, jsonify
+import json 
+
 # Initilize Flask app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -194,6 +198,16 @@ stock_info = {
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
+    success, message = download_disclosures(year)
+    flash(message, 'success' if success else 'error')
+    return redirect(url_for('index'))
+
+@app.route('/dashboard')
+def dashboard():
+    json_path = os.path.join(os.path.dirname(__file__), '..', 'Raw Data', 'rep_summary.json')
+    with open(json_path, 'r') as f:
+        data = json.load(f)
+    return render_template("dashboard.html", data=data)
 
 if __name__ == '__main__':
     app.run(debug=True)
