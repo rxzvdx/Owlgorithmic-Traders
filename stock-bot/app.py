@@ -136,6 +136,7 @@ def view_chart(symbol):
 
     return render_template('chart_view.html', symbol=display_symbol, description=description, overview=overview)
 
+
 # Global stock information dictionary
 stock_info = {
     'AAPL': 'Apple Inc. is a technology company known for the iPhone, Mac, and innovative hardware and software.',
@@ -189,6 +190,10 @@ stock_info = {
     'LIN': 'Linde plc is a multinational industrial gas and engineering company.',
     'AVGO': 'Broadcom Inc. is a semiconductor and infrastructure software company.'
 }
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

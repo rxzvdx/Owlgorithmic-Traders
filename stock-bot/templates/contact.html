@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us - Owlgorithmic Traders</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="dark-theme">
+    <div class="top-right-nav">
+        <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
+    </div>
+
+    <div class="contact-container">
+        <h2>Contact Us</h2>
+        <form name="submit-to-google-sheet">
+            <input type="text" name="Name" placeholder="Your Name" required>
+            <input type="email" name="Email" placeholder="Your Email" required>
+            <textarea name="Subject" rows="1" placeholder="Subject" required></textarea>
+            <textarea name="message" rows="6" placeholder="Your Message" required></textarea>
+            <button type="submit" class="btn btn2">Submit</button>
+        </form>
+        <span id="msg"></span>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxkF_e9MorkNX2uKMCQW8q8UdYmRJUMwdYl1q-djvxTMtD45odSpqOEZQ3EcZdUf6ZO4g/exec'
+        const form = document.forms['submit-to-google-sheet']
+        const msg = document.getElementById("msg")
+
+        form.addEventListener('submit', e => {
+            e.preventDefault()
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+                .then(response => {
+                    msg.innerHTML = "Message sent successfully!"; // Display upon succesful submisison
+                    setTimeout(() => msg.innerHTML = "", 5000);
+                    form.reset();
+                })
+                .catch(error => {
+                    msg.innerHTML = "An error occurred.";
+                    console.error('Error!', error.message) // Display upon failed submisison
+                })
+        });
+    });
+</script>
+
+</body>
+</html>
