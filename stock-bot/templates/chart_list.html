@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select a Stock Chart</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dark-theme">
+    <div class="top-right-nav">
+        <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
+    </div>
+    <div class="chart-list-container">
+        <h1 class="chart-heading">Top 50 Companies Stock Charts</h1>
+        <div class="stock-list">
+            {% set names = {
+                'AAPL': 'Apple', 'MSFT': 'Microsoft', 'NVDA': 'Nvidia', 'AMZN': 'Amazon', 'GOOGL': 'Google',
+                'META': 'Meta', 'TSLA': 'Tesla', 'BRK.B': 'Berkshire Hathaway', 'UNH': 'UnitedHealth Group',
+                'JNJ': 'Johnson & Johnson', 'V': 'Visa', 'PG': 'Procter & Gamble', 'JPM': 'JPMorgan Chase',
+                'HD': 'Home Depot', 'MA': 'Mastercard', 'XOM': 'Exxon Mobil', 'PFE': 'Pfizer', 'KO': 'Coca-Cola',
+                'PEP': 'PepsiCo', 'BAC': 'Bank of America', 'CSCO': 'Cisco', 'DIS': 'Disney', 'CMCSA': 'Comcast',
+                'VZ': 'Verizon', 'ADBE': 'Adobe', 'NFLX': 'Netflix', 'INTC': 'Intel', 'T': 'AT&T', 'WMT': 'Walmart',
+                'MRK': 'Merck', 'ABT': 'Abbott', 'CRM': 'Salesforce', 'NKE': 'Nike', 'ORCL': 'Oracle', 'COST': 'Costco',
+                'MCD': "McDonald's", 'LLY': 'Eli Lilly', 'DHR': 'Danaher', 'MDT': 'Medtronic', 'BMY': 'Bristol-Myers Squibb',
+                'TMO': 'Thermo Fisher', 'NEE': 'NextEra Energy', 'UPS': 'UPS', 'PM': 'Philip Morris', 'CVX': 'Chevron',
+                'QCOM': 'Qualcomm', 'TXN': 'Texas Instruments', 'UNP': 'Union Pacific', 'LIN': 'Linde', 'AVGO': 'Broadcom'
+            } %}
+
+            {% for stock in names.keys() %}
+                <form method="GET" action="{{ url_for('view_chart', symbol=stock|replace(':', '__')) }}">
+                    <button class="btn primary stock-button" type="submit">{{ names[stock] }}</button>
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
