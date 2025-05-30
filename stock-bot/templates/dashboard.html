@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Owlgorithmic Traders</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dark-theme">
+    <div class="container">
+        <h1>Representative Disclosure Summary (2021–2025)</h1>
+        <table border="1" class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Representative</th>
+                    <th>Year</th>
+                    <th># of PDFs</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rep, years in data.items() %}
+                    {% for year, pdfs in years.items() %}
+                        <tr>
+                            <td>{{ rep }}</td>
+                            <td>{{ year }}</td>
+                            <td>{{ pdfs|length }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+ 
