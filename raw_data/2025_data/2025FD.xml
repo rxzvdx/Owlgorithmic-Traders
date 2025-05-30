@@ -166,6 +166,17 @@
     <DocID>10070287</DocID>
   </Member>
   <Member>
+    <Prefix>Mr.</Prefix>
+    <Last>Amyx</Last>
+    <First>William Kory</First>
+    <Suffix />
+    <FilingType>D</FilingType>
+    <StateDst>IN05</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/27/2025</FilingDate>
+    <DocID>40004782</DocID>
+  </Member>
+  <Member>
     <Prefix />
     <Last>Antropov</Last>
     <First>Jayden</First>
@@ -749,6 +760,17 @@
     <DocID>10063243</DocID>
   </Member>
   <Member>
+    <Prefix />
+    <Last>Chung</Last>
+    <First>Eric</First>
+    <Suffix />
+    <FilingType>X</FilingType>
+    <StateDst>MI10</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>30024004</DocID>
+  </Member>
+  <Member>
     <Prefix>Hon.</Prefix>
     <Last>Cisneros</Last>
     <First>Gilbert</First>
@@ -846,6 +868,17 @@
     <Year>2025</Year>
     <FilingDate>4/1/2025</FilingDate>
     <DocID>20028025</DocID>
+  </Member>
+  <Member>
+    <Prefix>Hon.</Prefix>
+    <Last>Cohen</Last>
+    <First>Steve</First>
+    <Suffix />
+    <FilingType>P</FilingType>
+    <StateDst>TN09</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>20030416</DocID>
   </Member>
   <Member>
     <Prefix />
@@ -1971,6 +2004,17 @@
   </Member>
   <Member>
     <Prefix>Hon.</Prefix>
+    <Last>Gonzalez-Colon</Last>
+    <First>Jenniffer</First>
+    <Suffix />
+    <FilingType>T</FilingType>
+    <StateDst>PR00</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>10063342</DocID>
+  </Member>
+  <Member>
+    <Prefix>Hon.</Prefix>
     <Last>Good</Last>
     <First>Robert G.</First>
     <Suffix />
@@ -2320,6 +2364,17 @@
     <Year>2025</Year>
     <FilingDate>5/22/2025</FilingDate>
     <DocID>30023153</DocID>
+  </Member>
+  <Member>
+    <Prefix />
+    <Last>Harjes</Last>
+    <First>Christopher John</First>
+    <Suffix />
+    <FilingType>X</FilingType>
+    <StateDst>NC11</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>30024003</DocID>
   </Member>
   <Member>
     <Prefix>Hon.</Prefix>
@@ -2817,6 +2872,28 @@
     <DocID>20028007</DocID>
   </Member>
   <Member>
+    <Prefix />
+    <Last>Kelloff</Last>
+    <First>Alexander George</First>
+    <Suffix />
+    <FilingType>X</FilingType>
+    <StateDst>CO03</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>30024000</DocID>
+  </Member>
+  <Member>
+    <Prefix />
+    <Last>Kelloff</Last>
+    <First>Alexander George</First>
+    <Suffix />
+    <FilingType>X</FilingType>
+    <StateDst>CO03</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>30024005</DocID>
+  </Member>
+  <Member>
     <Prefix>Hon.</Prefix>
     <Last>Kelly</Last>
     <First>Mike</First>
@@ -3279,6 +3356,17 @@
     <DocID>10067268</DocID>
   </Member>
   <Member>
+    <Prefix />
+    <Last>London</Last>
+    <First>Steven</First>
+    <Suffix />
+    <FilingType>X</FilingType>
+    <StateDst>NV03</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>30024002</DocID>
+  </Member>
+  <Member>
     <Prefix>Hon.</Prefix>
     <Last>Lopez</Last>
     <First>Greg</First>
@@ -3588,6 +3676,17 @@
   </Member>
   <Member>
     <Prefix />
+    <Last>McKenzie</Last>
+    <First>Ronald</First>
+    <Suffix />
+    <FilingType>X</FilingType>
+    <StateDst>GA13</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>30024001</DocID>
+  </Member>
+  <Member>
+    <Prefix />
     <Last>McQueen</Last>
     <First>Eldon Dan</First>
     <Suffix />
@@ -3607,6 +3706,28 @@
     <Year>2025</Year>
     <FilingDate>5/22/2025</FilingDate>
     <DocID>30023824</DocID>
+  </Member>
+  <Member>
+    <Prefix>Mr.</Prefix>
+    <Last>Meyer</Last>
+    <First>Bradley Allen</First>
+    <Suffix />
+    <FilingType>A</FilingType>
+    <StateDst>IN09</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/28/2025</FilingDate>
+    <DocID>10070351</DocID>
+  </Member>
+  <Member>
+    <Prefix>Mr.</Prefix>
+    <Last>Meyer</Last>
+    <First>Bradley Allen</First>
+    <Suffix />
+    <FilingType>C</FilingType>
+    <StateDst>IN09</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/27/2025</FilingDate>
+    <DocID>10070348</DocID>
   </Member>
   <Member>
     <Prefix>Hon.</Prefix>
@@ -5472,6 +5593,17 @@
     <Last>Waltz</Last>
     <First>Michael</First>
     <Suffix />
+    <FilingType>E</FilingType>
+    <StateDst>FL06</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/27/2025</FilingDate>
+    <DocID>40004775</DocID>
+  </Member>
+  <Member>
+    <Prefix>Hon.</Prefix>
+    <Last>Waltz</Last>
+    <First>Michael</First>
+    <Suffix />
     <FilingType>P</FilingType>
     <StateDst>FL06</StateDst>
     <Year>2025</Year>
@@ -5730,6 +5862,17 @@
     <Year>2025</Year>
     <FilingDate>3/1/2025</FilingDate>
     <DocID>20027867</DocID>
+  </Member>
+  <Member>
+    <Prefix />
+    <Last>Wilson</Last>
+    <First>Jeff</First>
+    <Suffix />
+    <FilingType>C</FilingType>
+    <StateDst>IL13</StateDst>
+    <Year>2025</Year>
+    <FilingDate>5/27/2025</FilingDate>
+    <DocID>10070259</DocID>
   </Member>
   <Member>
     <Prefix />

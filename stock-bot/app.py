@@ -1,5 +1,8 @@
 import os
 import yfinance as yf
+import json
+from flask import render_template
+
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for local testing
 
@@ -7,7 +10,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for local testing
 from flask import session, Flask, render_template, request, redirect, url_for, flash, current_app, after_this_request, send_file
 
 # Custom Utilities
-from utils.downloader import download_disclosures
+from utils.downloader import download_and_extract_disclosures
 from utils.login import google_blueprint
 
 # Flask-Dance imports
@@ -89,7 +92,7 @@ def download():
         return redirect(url_for('index'))
 
     year = request.form['year']
-    file_buffer, message = download_disclosures(year)
+    file_buffer, message = download_and_extract_disclosures(year)
     
     if file_buffer is None:
         flash(message, 'error')
@@ -105,6 +108,21 @@ def download():
     except Exception as e:
         flash(f"Download failed: {str(e)}", 'error')
         return redirect(url_for('index'))
+
+@app.route('/dashboard')
+def dashboard():
+    # Goes up one level from stock-bot/ and into raw_data/
+    summary_path = os.path.join(os.path.dirname(__file__), '..', 'raw_data', 'rep_summary.json')
+    summary_path = os.path.abspath(summary_path)
+
+    if not os.path.exists(summary_path):
+        return "Summary file not found.", 404
+
+    with open(summary_path, 'r') as f:
+        summary_data = json.load(f)
+
+    return render_template('dashboard.html', data=summary_data)
+
 
 @app.route('/chart_view')
 def chart_list():
