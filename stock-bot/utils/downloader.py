@@ -31,36 +31,4 @@ def download_and_extract_disclosures(year):
 
         return True, f"{year} data downloaded and extracted successfully."
     except Exception as e:
-        return False, f"Error downloading {year}: {str(e)}"
-
-def summarize_disclosures(base_dir=HOUSE_DIR):
-    reps_data = defaultdict(lambda: defaultdict(list))  # {rep_name: {year: [pdfs]}}
-    for rep_folder in os.listdir(base_dir):
-        rep_path = os.path.join(base_dir, rep_folder)
-        if not os.path.isdir(rep_path):
-            continue
-
-        for year_folder in os.listdir(rep_path):
-            year_path = os.path.join(rep_path, year_folder)
-            if not os.path.isdir(year_path):
-                continue
-
-            pdfs = [f for f in os.listdir(year_path) if f.lower().endswith('.pdf')]
-            reps_data[rep_folder][year_folder] = pdfs
-
-    return reps_data
-
-def save_summary_to_json(reps_data, json_path=os.path.join(RAW_DATA_DIR, "rep_summary.json")):
-    with open(json_path, 'w') as f:
-        json.dump(reps_data, f, indent=2)
-    print(f"\nSaved summary to {json_path}")
-
-if __name__ == "__main__":
-    os.makedirs(RAW_DATA_DIR, exist_ok=True)
-
-    for year in VALID_YEARS:
-        success, message = download_and_extract_disclosures(year)
-        print(message)
-
-    summary = summarize_disclosures()
-    save_summary_to_json(summary)
+        return None, f"Error: {str(e)}"
