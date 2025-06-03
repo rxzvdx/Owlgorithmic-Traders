@@ -2,6 +2,10 @@ import os
 import yfinance as yf
 import json
 from flask import render_template
+import pandas as pd
+import glob
+import xml.etree.ElementTree as ET
+from flask import jsonify
 
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for local testing
@@ -109,20 +113,6 @@ def download():
         flash(f"Download failed: {str(e)}", 'error')
         return redirect(url_for('index'))
 
-@app.route('/dashboard')
-def dashboard():
-    # Goes up one level from stock-bot/ and into raw_data/
-    summary_path = os.path.join(os.path.dirname(__file__), '..', 'raw_data', 'rep_summary.json')
-    summary_path = os.path.abspath(summary_path)
-
-    if not os.path.exists(summary_path):
-        return "Summary file not found.", 404
-
-    with open(summary_path, 'r') as f:
-        summary_data = json.load(f)
-
-    return render_template('dashboard.html', data=summary_data)
-
 
 @app.route('/chart_view')
 def chart_list():
@@ -213,12 +203,102 @@ stock_info = {
     'AVGO': 'Broadcom Inc. is a semiconductor and infrastructure software company.'
 }
 
+
+#dashboard
+@app.route('/api/stock/<symbol>')
+def stock_api(symbol):
+    import yfinance as yf
+    data = yf.Ticker(symbol)
+    hist = data.history(period='1mo')
+
+    if hist.empty:
+        return {'error': 'No data found'}, 404
+
+    hist.reset_index(inplace=True)
+    hist['Date'] = hist['Date'].astype(str)
+    return hist.to_json(orient='records')
+
+
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
     success, message = download_disclosures(year)
     flash(message, 'success' if success else 'error')
     return redirect(url_for('index'))
+
+@app.route('/dashboard')
+def dashboard():
+    user_email = None
+    if google.authorized:
+        try:
+            resp = google.get('/oauth2/v1/userinfo')
+            if resp.ok:
+                user_email = resp.json().get('email')
+        except TokenExpiredError:
+            flash("Session expired. Please log in again.", "error")
+            return redirect(url_for("google.login"))
+    return render_template('dashboard.html', user_email=user_email, google=google)
+
+
+@app.route('/api/disclosures')
+def disclosures_api():
+
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    raw_data_dir = os.path.join(base_dir, 'raw_data')
+
+    data = []
+
+    #loop through each year finding the files
+    for year_folder in os.listdir(raw_data_dir):
+        folder_path = os.path.join(raw_data_dir, year_folder)
+        if os.path.isdir(folder_path):
+            #checks xml
+            for file in os.listdir(folder_path):
+                if file.endswith('.xml'):
+                    xml_path = os.path.join(folder_path, file)
+                    print(f"Processing: {xml_path}")
+
+                    try:
+                        tree = ET.parse(xml_path)
+                        root = tree.getroot()
+
+                        for member in root.findall('Member'):
+                            name = f"{member.findtext('First', default='')} {member.findtext('Last', default='')}".strip()
+                            state = member.findtext('StateDst', default='N/A')
+                            filing_type = member.findtext('FilingType', default='N/A')
+                            date = member.findtext('FilingDate', default='N/A')
+                            year = member.findtext('Year', default=year_folder.split('_')[0])
+
+                            data.append({
+                                'name': name,
+                                'state': state,
+                                'type': filing_type,
+                                'date': date,
+                                'year': year
+                            })
+                    except Exception as e:
+                        print(f"Error processing {xml_path}: {e}")
+
+    if not data:
+        return {'error': 'No disclosures found'}, 404
+
+    return jsonify(data)
+
+
+@app.route('/disclosures')
+def disclosures_page():
+    user_email = None
+    if google.authorized:
+        try:
+            resp = google.get('/oauth2/v1/userinfo')
+            if resp.ok:
+                user_email = resp.json().get('email')
+        except TokenExpiredError:
+            flash("Session expired. Please log in again.", "error")
+            return redirect(url_for("google.login"))
+
+    return render_template('disclosures.html', user_email=user_email, google=google)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
