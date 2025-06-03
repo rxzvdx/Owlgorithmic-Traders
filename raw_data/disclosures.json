@@ -1,0 +1,26 @@
+[
+  {
+    "name": "John Doe",
+    "stock": "AAPL",
+    "type": "Purchase",
+    "date": "2024-05-10"
+  },
+  {
+    "name": "Jane Smith",
+    "stock": "TSLA",
+    "type": "Sale",
+    "date": "2024-04-22"
+  },
+  {
+    "name": "Sen. Alex Brown",
+    "stock": "MSFT",
+    "type": "Purchase",
+    "date": "2024-03-15"
+  },
+  {
+    "name": "Rep. Lisa Green",
+    "stock": "AMZN",
+    "type": "Sale",
+    "date": "2024-02-08"
+  }
+]
