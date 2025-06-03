@@ -84,7 +84,7 @@ def logout():
     flash("You have been logged out.", "success")
     return redirect(url_for('index'))
 
-# Download outes will only work if the user is logged in
+# Download routes will only work if the user is logged in
 @app.route('/download', methods=['POST'])
 def download():
     if not google.authorized:
