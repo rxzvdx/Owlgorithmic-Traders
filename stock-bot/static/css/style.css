@@ -411,3 +411,39 @@ nav ul li a:hover::after {
     color: #33ff88;
     font-weight: bold;
 }
+
+.table-container {
+  max-height: 950px;
+  overflow-y: auto;
+  border: 1px solid #444;
+  margin: 20px 0;
+  background-color: #111;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+#disclosureTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+
+#disclosureTable th, #disclosureTable td {
+  border: 1px solid #333;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+#disclosureTable th {
+  background-color: #222;
+  font-weight: bold;
+}
+
+#disclosureTable tr:nth-child(even) {
+  background-color: #1a1a1a;
+}
+
+#disclosureTable tr:hover {
+  background-color: #333;
+}
