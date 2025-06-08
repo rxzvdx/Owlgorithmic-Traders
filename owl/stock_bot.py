@@ -5,7 +5,7 @@
 #    Alexander Schifferle
 #    Mike Kheang
 # Assignment: 
-#    Senior Project (Summer 2025) - "Stock Bot"
+#    Senior Project (Summer 2025) - "stock_bot"
 # Last Update: 
 #    May 28 2025
 # Purpose: 
