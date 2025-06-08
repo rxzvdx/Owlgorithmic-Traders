@@ -47,9 +47,16 @@ def display_summary(reps_data):
 
 
 def save_summary_to_json(reps_data, filename="rep_summary.json"):
-    with open(filename, 'w') as f:
+    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    raw_data_dir = os.path.join(parent_dir, 'raw_data')
+    os.makedirs(raw_data_dir, exist_ok=True)
+
+    file_path = os.path.join(raw_data_dir, filename)
+
+    with open(file_path, 'w') as f:
         json.dump(reps_data, f, indent=2)
-    print(f"\nSaved summary to {filename}")
+
+    print(f"\nSaved summary to {file_path}")
 
 
 if __name__ == "__main__":

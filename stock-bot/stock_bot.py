@@ -27,7 +27,7 @@ BASE_URL = 'https://disclosures-clerk.house.gov/public_disc'
 ROOT_DIR = os.getcwd()
 HOUSE_DIR = os.path.join(ROOT_DIR, 'House')
 RAW_DATA_DIR = os.path.join(ROOT_DIR, 'Raw Data')
-LOGS_DIR = os.path.join(ROOT_DIR, 'Terminal Logs')
+LOGS_DIR = os.path.abspath(os.path.join(ROOT_DIR, '..', 'Terminal Logs'))
 
 # Create required directories
 os.makedirs(HOUSE_DIR, exist_ok=True)

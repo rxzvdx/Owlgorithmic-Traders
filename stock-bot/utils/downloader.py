@@ -9,7 +9,7 @@
 # Last Update: 
 #    June 8 2025
 # Purpose: 
-#    This script downloads each raw disclosure, and extracts it.
+#    This script downloads each raw disclosure, extracts it, then stores it in "raw_data".
 
 import os
 import json
