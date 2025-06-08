@@ -1,20 +1,4 @@
-# Author(s): 
-#    Antonio Rosado
-#    Kashan Khan
-#    Imad Khan
-#    Alexander Schifferle
-#    Mike Kheang
-# Assignment: 
-#    Senior Project (Summer 2025) - "Stock Bot"
-# Last Update: 
-#    May 20 2025
-# Purpose: 
-#    This script downloads a ZIP archive of financial disclosures, extracts its contents,
-#    reads a tab-delimited text file with metadata about each disclosure,
-#    and (optionally) downloads specific individual reports in PDF format
-#    based on the name of the filer.
-
-
+# DEPRECATED
 
 import csv, json, zipfile
 # Standard library imports:

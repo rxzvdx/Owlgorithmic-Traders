@@ -1,3 +1,17 @@
+# Author(s): 
+#    Antonio Rosado
+#    Kashan Khan
+#    Imad Khan
+#    Alexander Schifferle
+#    Mike Kheang
+# Assignment: 
+#    Senior Project (Summer 2025) - "Stock Bot"
+# Last Update: 
+#    June 8 2025
+# Purpose: 
+#    This script manually downloads PDFs for each representative based on DOC_ID from raw data, 
+#    and places them by name of Rep. in "House" directory.
+
 import os
 import json
 from collections import defaultdict

@@ -1,3 +1,16 @@
+# Author(s): 
+#    Antonio Rosado
+#    Kashan Khan
+#    Imad Khan
+#    Alexander Schifferle
+#    Mike Kheang
+# Assignment: 
+#    Senior Project (Summer 2025) - "Stock Bot"
+# Last Update: 
+#    June 8 2025
+# Purpose: 
+#    This script downloads each raw disclosure, and extracts it.
+
 import os
 import json
 import requests

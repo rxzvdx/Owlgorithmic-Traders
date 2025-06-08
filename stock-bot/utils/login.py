@@ -1,3 +1,16 @@
+# Author(s): 
+#    Antonio Rosado
+#    Kashan Khan
+#    Imad Khan
+#    Alexander Schifferle
+#    Mike Kheang
+# Assignment: 
+#    Senior Project (Summer 2025) - "Stock Bot"
+# Last Update: 
+#    June 8 2025
+# Purpose: 
+#    This script allows users to sign in/sign up with Google OAuth
+
 from flask_dance.contrib.google import make_google_blueprint
 
 google_blueprint = make_google_blueprint(
