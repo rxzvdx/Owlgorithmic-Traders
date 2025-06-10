@@ -447,3 +447,56 @@ nav ul li a:hover::after {
 #disclosureTable tr:hover {
   background-color: #333;
 }
+
+/* Dashboard Filters & Suggestions */
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.filter-container {
+  position: relative;
+  width: 200px;
+}
+
+.filter-container input,
+.filter-container select {
+  padding: 8px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #2c2c2c;
+  color: #fff;
+  appearance: none;
+}
+
+/* Autocomplete suggestion dropdown */
+.suggestion-box {
+  position: absolute;
+  background: #2c2c2c;
+  border: 1px solid #444;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  z-index: 100;
+  display: none;
+}
+
+.suggestion-box div {
+  padding: 8px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.suggestion-box div:hover {
+  background: #444;
+}
+
+/* Center the page title */
+.page-section h2 {
+  text-align: center;
+}

@@ -14,7 +14,7 @@
 import os
 import yfinance as yf
 import json
-from flask import render_template
+from flask import render_template, url_for
 import pandas as pd
 import glob
 import xml.etree.ElementTree as ET
@@ -241,31 +241,55 @@ def contact():
 
 @app.route('/dashboard')
 def dashboard():
-    user_email = None
-    if google.authorized:
-        try:
-            resp = google.get('/oauth2/v1/userinfo')
-            if resp.ok:
-                user_email = resp.json().get('email')
-        except TokenExpiredError:
-            flash("Session expired. Please log in again.", "error")
-            return redirect(url_for("google.login"))
-    return render_template('dashboard.html', user_email=user_email, google=google)
+    base_path = os.path.join(os.path.dirname(__file__), 'raw_data')
+    disclosures = []
 
+    if not os.path.exists(base_path):
+        print("❌ raw_data not found")
+        return render_template("dashboard.html", disclosures=[])
+
+    for year_folder in os.listdir(base_path):
+        year_path = os.path.join(base_path, year_folder)
+        if not os.path.isdir(year_path):
+            continue
+
+        for file in os.listdir(year_path):
+            if file.endswith('.xml'):
+                file_path = os.path.join(year_path, file)
+                try:
+                    tree = ET.parse(file_path)
+                    root = tree.getroot()
+                    transactions = root.find("TransactionInformation")
+                    if transactions is None:
+                        continue
+
+                    for txn in transactions.findall("Transaction"):
+                        disclosures.append({
+                            'year': year_folder.replace('_data', ''),
+                            'file': file,
+                            'date': txn.findtext('TransactionDate', default='N/A'),
+                            'ticker': txn.findtext('Ticker', default='N/A'),
+                            'owner': txn.findtext('Owner', default='N/A'),
+                            'type': txn.findtext('Type', default='N/A'),
+                            'desc': txn.findtext('AssetDescription', default='N/A'),
+                            'amount': txn.findtext('Amount', default='N/A')
+                        })
+                except ET.ParseError:
+                    print(f"⚠️ Failed to parse XML: {file_path}")
+                    continue
+
+    return render_template("dashboard.html", disclosures=disclosures)
 
 @app.route('/api/disclosures')
 def disclosures_api():
-
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    raw_data_dir = os.path.join(base_dir, 'raw_data')
+    # This path is correct based on your screenshot
+    raw_data_dir = os.path.join(os.path.dirname(__file__), 'raw_data')
 
     data = []
 
-    #loop through each year finding the files
     for year_folder in os.listdir(raw_data_dir):
         folder_path = os.path.join(raw_data_dir, year_folder)
         if os.path.isdir(folder_path):
-            #checks xml
             for file in os.listdir(folder_path):
                 if file.endswith('.xml'):
                     xml_path = os.path.join(folder_path, file)
@@ -312,6 +336,12 @@ def disclosures_page():
 
     return render_template('disclosures.html', user_email=user_email, google=google)
 
+from flask import send_from_directory
+
+@app.route('/disclosures/<year_folder>/<filename>')
+def serve_disclosure(year_folder, filename):
+    folder_path = os.path.join(os.path.dirname(__file__), 'raw_data', year_folder)
+    return send_from_directory(folder_path, filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
