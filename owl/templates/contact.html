@@ -64,7 +64,6 @@ Purpose:
                     console.error('Error!', error.message);
                 })
                 .finally(() => {
-                    // ⏱️ Re-enable the button after 5 seconds
                     setTimeout(() => {
                         submitButton.disabled = false;
                         submitButton.textContent = originalText;
