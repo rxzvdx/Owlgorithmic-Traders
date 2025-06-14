@@ -42,6 +42,6 @@ def download_and_extract_disclosures(year):
         with zipfile.ZipFile(BytesIO(response.content)) as z:
             z.extractall(year_dir)
 
-        return True, f"{year} data downloaded and extracted successfully."
+        return BytesIO(response.content), f"{year}_disclosures.zip"
     except Exception as e:
         return None, f"Error: {str(e)}"
