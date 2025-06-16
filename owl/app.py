@@ -15,11 +15,12 @@ import os
 import yfinance as yf
 import json
 from flask import render_template, url_for
+
 import pandas as pd
 import glob
 import xml.etree.ElementTree as ET
-from flask import jsonify
 
+from flask import jsonify
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for local testing
 
@@ -40,6 +41,9 @@ from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 # Parsing logic
 from flask import Flask, render_template, jsonify
 import json 
+
+# Desktop notification
+from utils.desktop_notifs import notify_user # type: ignore
 
 # Initilize Flask app
 app = Flask(__name__)
@@ -342,6 +346,27 @@ from flask import send_from_directory
 def serve_disclosure(year_folder, filename):
     folder_path = os.path.join(os.path.dirname(__file__), 'raw_data', year_folder)
     return send_from_directory(folder_path, filename)
+
+@app.route('/create_plan', methods=['POST'])
+def create_plan():
+    if not google.authorized:
+        flash("Please log in to create your plan.", "error")
+        return redirecturl_for("index"))
+    
+    # placeholder for user info from db
+    user = get_user_by_email(session.get('email'))
+    
+    # personalized plan logic here 
+    # ...
+    
+    # notify user only if they are opted in
+    if user.opt_in:
+        notify_user(
+            title="Your personalized plan is ready!"
+            message=f"{user.first_name}, your personalized investment plan has been created. Check your dashboard for a full view!"
+        )
+    flash("Your plan was created successfully.", "success")
+    return redirect(url_for("dashboard"))
 
 if __name__ == '__main__':
     app.run(debug=True)
