@@ -351,7 +351,7 @@ def serve_disclosure(year_folder, filename):
 def create_plan():
     if not google.authorized:
         flash("Please log in to create your plan.", "error")
-        return redirecturl_for("index"))
+        return redirecturl_for("index")
     
     # placeholder for user info from db
     user = get_user_by_email(session.get('email'))
@@ -362,7 +362,7 @@ def create_plan():
     # notify user only if they are opted in
     if user.opt_in:
         notify_user(
-            title="Your personalized plan is ready!"
+            title="Your personalized plan is ready!",
             message=f"{user.first_name}, your personalized investment plan has been created. Check your dashboard for a full view!"
         )
     flash("Your plan was created successfully.", "success")
