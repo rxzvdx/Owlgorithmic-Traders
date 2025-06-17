@@ -14,43 +14,46 @@
 import os
 import yfinance as yf
 import json
-from flask import render_template, url_for
-
 import pandas as pd
 import glob
 import xml.etree.ElementTree as ET
 
-from flask import jsonify
+from flask import (
+    Flask, render_template, request, redirect, url_for, flash,
+    session, jsonify, send_file, after_this_request, send_from_directory
+)
 
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for local testing
-
-# Flask framework imports
-from flask import session, Flask, render_template, request, redirect, url_for, flash, current_app, after_this_request, send_file
-
-# Custom Utilities
-from utils.downloader import download_and_extract_disclosures
-from utils.login import google_blueprint
-
-# Flask-Dance imports
-from flask_dance.contrib.google import google
-from flask_dance.consumer import oauth_authorized
-
-#OAuth imports
-from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
-
-# Parsing logic
-from flask import Flask, render_template, jsonify
-import json 
-
-# Desktop notification
-from utils.desktop_notifs import notify_user # type: ignore
+# Custom imports
+from models.models import db
 
 # Initilize Flask app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
-# Register the Google OAuth blueprint under url_prefix
+
+# OAuth transport setting (for local dev)
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+# Config
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://<user>:<password>@localhost/<dbname>"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db.init_app(app)
+
+# Register routes/blueprints
+from utils.favorites import favorites_bp
+from utils.downloader import download_and_extract_disclosures
+from utils.login import google_blueprint
+from utils.desktop_notifs import notify_user
+
+# OAuth
+from flask_dance.contrib.google import google
+from flask_dance.consumer import oauth_authorized
+from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
+
 app.register_blueprint(google_blueprint, url_prefix="/login")
+app.register_blueprint(favorites_bp)
+
 
 # Home page route
 @app.route('/')
@@ -351,7 +354,7 @@ def serve_disclosure(year_folder, filename):
 def create_plan():
     if not google.authorized:
         flash("Please log in to create your plan.", "error")
-        return redirecturl_for("index")
+        return redirect(url_for("index"))
     
     # placeholder for user info from db
     user = get_user_by_email(session.get('email'))

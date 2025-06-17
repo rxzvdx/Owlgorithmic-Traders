@@ -1,0 +1,9 @@
+<!-- templates/favorites.html -->
+<h2>Your Favorite Stocks</h2>
+<ul>
+  {% for symbol in symbols %}
+    <li><a href="{{ url_for('chart_view', symbol=symbol) }}">{{ symbol }}</a></li>
+  {% else %}
+    <p>No favorites yet.</p>
+  {% endfor %}
+</ul>

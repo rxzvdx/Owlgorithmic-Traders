@@ -23,6 +23,9 @@ Purpose:
     <div class="chart-view-container">
         <a href="{{ url_for('chart_list') }}" class="back-link">← Back to Stock List</a>
         <h2>{{ symbol }} Live Stock Chart</h2>
+
+        <!-- Favorite Button -->
+        <button id="favorite-btn" data-symbol="{{ symbol }}" class="favorite-btn">☆</button>
         <p class="chart-description">{{ description }}</p>
 
         <!-- Left/Right Layout -->
@@ -68,5 +71,31 @@ Purpose:
             </div>
         </div>
     </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const favBtn = document.getElementById("favorite-btn");
+    const symbol = favBtn.dataset.symbol;
+
+    favBtn.addEventListener("click", () => {
+        fetch("/favorite", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ symbol: symbol })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "added") {
+                favBtn.textContent = "★";
+            } else {
+                favBtn.textContent = "☆";
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>

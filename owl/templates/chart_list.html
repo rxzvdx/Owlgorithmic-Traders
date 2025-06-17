@@ -15,13 +15,14 @@ Purpose:
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Select a Stock Chart</title>
+    <title>Stock Charts</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="dark-theme">
     <div class="top-right-nav">
         <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
+        <a href="{{ url_for('favorites.view_favorites') }}" class="favorites-btn">⭐ View My Favorites</a>
     </div>
     <div class="chart-list-container">
         <h1 class="chart-heading">Top 50 Companies Stock Charts</h1>
