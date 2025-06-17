@@ -45,6 +45,10 @@ import json
 # Desktop notification
 from utils.desktop_notifs import notify_user # type: ignore
 
+# Add this near the top of the file with other imports
+from functools import lru_cache
+from datetime import datetime, timedelta
+
 # Initilize Flask app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -220,11 +224,22 @@ stock_info = {
     'AVGO': 'Broadcom Inc. is a semiconductor and infrastructure software company.'
 }
 
+# Add this after the stock_info dictionary
+# Cache for stock data
+stock_cache = {}
+CACHE_DURATION = timedelta(minutes=5)
 
-#dashboard
 @app.route('/api/stock/<symbol>')
 def stock_api(symbol):
     try:
+        # Check cache first
+        current_time = datetime.now()
+        if symbol in stock_cache:
+            cached_data, cache_time = stock_cache[symbol]
+            if current_time - cache_time < CACHE_DURATION:
+                return jsonify(cached_data)
+
+        # If not in cache or cache expired, fetch new data
         stock = yf.Ticker(symbol)
         info = stock.info
         
@@ -238,11 +253,16 @@ def stock_api(symbol):
         else:
             change = 0
             
-        return jsonify({
+        data = {
             'symbol': symbol,
             'price': current_price,
             'change': change
-        })
+        }
+        
+        # Update cache
+        stock_cache[symbol] = (data, current_time)
+            
+        return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -362,7 +382,7 @@ def serve_disclosure(year_folder, filename):
 def create_plan():
     if not google.authorized:
         flash("Please log in to create your plan.", "error")
-        return redirecturl_for("index"))
+        return redirect(url_for("index"))
     
     # placeholder for user info from db
     user = get_user_by_email(session.get('email'))
@@ -373,7 +393,7 @@ def create_plan():
     # notify user only if they are opted in
     if user.opt_in:
         notify_user(
-            title="Your personalized plan is ready!"
+            title="Your personalized plan is ready!",
             message=f"{user.first_name}, your personalized investment plan has been created. Check your dashboard for a full view!"
         )
     flash("Your plan was created successfully.", "success")
