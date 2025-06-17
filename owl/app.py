@@ -199,7 +199,7 @@ stock_info = {
     'NKE': 'Nike Inc. designs, markets, and sells athletic apparel, footwear, and equipment.',
     'ORCL': 'Oracle Corporation provides database software and cloud computing infrastructure.',
     'COST': 'Costco Wholesale is a membership-based warehouse club with global operations.',
-    'MCD': 'McDonald’s Corporation is the largest fast-food chain in the world by revenue.',
+    'MCD': "McDonald's Corporation is the largest fast-food chain in the world by revenue.",
     'LLY': 'Eli Lilly and Company is a pharmaceutical company known for diabetes and cancer therapies.',
     'DHR': 'Danaher Corporation designs and manufactures medical and industrial tools and technology.',
     'MDT': 'Medtronic plc is a medical technology company specializing in devices and therapies.',
@@ -220,16 +220,27 @@ stock_info = {
 #dashboard
 @app.route('/api/stock/<symbol>')
 def stock_api(symbol):
-    import yfinance as yf
-    data = yf.Ticker(symbol)
-    hist = data.history(period='1mo')
-
-    if hist.empty:
-        return {'error': 'No data found'}, 404
-
-    hist.reset_index(inplace=True)
-    hist['Date'] = hist['Date'].astype(str)
-    return hist.to_json(orient='records')
+    try:
+        stock = yf.Ticker(symbol)
+        info = stock.info
+        
+        # Get the current price and previous close
+        current_price = info.get('regularMarketPrice', 0)
+        previous_close = info.get('regularMarketPreviousClose', current_price)
+        
+        # Calculate the percentage change
+        if previous_close and previous_close != 0:
+            change = ((current_price - previous_close) / previous_close) * 100
+        else:
+            change = 0
+            
+        return jsonify({
+            'symbol': symbol,
+            'price': current_price,
+            'change': change
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/contact')
