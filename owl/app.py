@@ -399,29 +399,5 @@ def create_plan():
     flash("Your plan was created successfully.", "success")
     return redirect(url_for("dashboard"))
 
-from flask import request, abort, render_template
-
-from flask import request, abort, render_template
-
-@app.route('/profile')
-def profile():
-    name             = request.args.get('name')
-    state            = request.args.get('state')
-    transaction_type = request.args.get('transaction_type')
-    year             = request.args.get('year')
-    symbol           = request.args.get('symbol')
-
-    if not name:
-        abort(404)
-
-    return render_template(
-        'profile.html',
-        name=name,
-        state=state,
-        transaction_type=transaction_type,
-        year=year,
-        symbol=symbol
-    )
-
 if __name__ == '__main__':
     app.run(debug=True)

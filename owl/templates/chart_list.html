@@ -1,17 +1,16 @@
 <!--
-Author(s):
+Author(s): 
     Antonio Rosado
     Kashan Khan
     Imad Khan
     Alexander Schifferle
     Mike Kheang
-Assignment:
+Assignment: 
     Senior Project (Summer 2025) - "chart_list"
-Last Update:
+Last Update: 
     June 8 2025
-Purpose:
-    Creates a chart of top 50 stocks as of now and their stats.
--->
+Purpose: 
+    Creates a chart of top 50 stocks as of now and their stats. -->
 
 <!DOCTYPE html>
 <html>
@@ -21,26 +20,10 @@ Purpose:
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="dark-theme">
-
-    <!-- NAVBAR -->
-    <div id="header">
-      <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
-        <!-- Logo on the top left -->
-        <a href="{{ url_for('index') }}">
-          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
-        </a>
-        <!-- Nav: Home, Contact, Dashboard -->
-        <nav>
-          <ul class="nav-list" style="display:flex; list-style:none; margin:0; padding:0;">
-            <li style="margin:0 15px;"><a href="{{ url_for('index') }}">Home</a></li>
-            <li style="margin:0 15px;"><a href="{{ url_for('contact') }}">Contact</a></li>
-            <li style="margin:0 15px;"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-          </ul>
-        </nav>
-      </div>
+    <div class="top-right-nav">
+        <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
     </div>
-
-    <div class="chart-list-container" style="padding:2rem;">
+    <div class="chart-list-container">
         <h1 class="chart-heading">Top 50 Companies Stock Charts</h1>
         <div class="stock-list">
             {% set names = {
@@ -63,6 +46,5 @@ Purpose:
             {% endfor %}
         </div>
     </div>
-
 </body>
 </html>

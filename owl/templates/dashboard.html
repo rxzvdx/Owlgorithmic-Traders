@@ -8,65 +8,33 @@ Author(s):
 Assignment: 
     Senior Project (Summer 2025) - "dashboard"
 Last Update: 
-    June 18 2025
+    June 8 2025
 Purpose: 
-    Display user dashboard (disclosures, specific representatives, stats by year, filtering)
--->
+    Display user dashboard (disclosures, specific representatives, stats by year, filtering) -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Disclosures Dashboard</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <style>
-    /* suggestion dropdown styling */
-    .suggestion-box {
-      position: absolute;
-      background: #000;
-      border: 1px solid #fff;
-      color: #fff;
-      z-index: 1000;
-      max-height: 150px;
-      overflow-y: auto;
-      width: 200px;
-      display: none;
-    }
-    .suggestion-box .suggestion {
-      padding: 8px;
-      cursor: pointer;
-      background: #000;
-      color: #fff;
-    }
-    .suggestion-box .suggestion:hover {
-      background: #fff;
-      color: #000;
-    }
-  </style>
 </head>
 <body class="dark-theme">
 
-  <!-- NAV BAR -->
-  <nav>
-    <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="Logo">
-    <ul>
-      <li><a href="{{ url_for('index') }}">Home</a></li>
-      <li><a href="{{ url_for('chart_list') }}">Live Charts</a></li>
-      <li><a href="{{ url_for('contact') }}">Contact</a></li>
-      {% if google is defined and google.authorized %}
-        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-      {% endif %}
-    </ul>
-  </nav>
+  <!-- Back Button Only (removed all nav links) -->
+  <div class="top-right-nav">
+    <a href="#" class="back-btn" onclick="history.back(); return false;">Back</a>
+  </div>
 
   <!-- Filters Row -->
-  <div class="container" style="position: relative;">
-    <h2 style="text-align:center; margin:20px 0;">Financial Disclosure Filings</h2>
+  <div class="container">
+    <h2 style="text-align:center; margin: 20px 0;">Financial Disclosure Filings</h2>
     <div class="filters-row">
-      <div class="filter-container" style="position: relative;">
+      <div class="filter-container">
         <input type="text" id="nameFilter" placeholder="Filter by name..." autocomplete="off">
         <div id="nameSuggestionBox" class="suggestion-box"></div>
       </div>
-      <div class="filter-container" style="position: relative;">
+      <div class="filter-container">
         <input type="text" id="stateFilter" placeholder="Filter by state..." autocomplete="off">
         <div id="stateSuggestionBox" class="suggestion-box"></div>
       </div>
@@ -81,17 +49,19 @@ Purpose:
         </select>
       </div>
     </div>
+  </div>
 
-    <!-- Disclosure Table -->
-    <div class="table-container" style="margin-top:20px;">
+  <!-- Disclosure Table -->
+  <div class="container">
+    <div class="table-container" style="margin-top: 20px;">
       <table id="disclosureTable">
         <thead>
           <tr>
             <th>Name</th>
             <th>State</th>
-            <th>Transaction</th>
+            <th>Transaction Type</th>
+            <th>Filing Date</th>
             <th>Year</th>
-            <th>Symbol</th>
           </tr>
         </thead>
         <tbody id="disclosureBody">
@@ -102,192 +72,167 @@ Purpose:
   </div>
 
   <script>
-    // Mapping state codes to full names
-    const stateMapping = {
-      AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California',
-      CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware', FL: 'Florida', GA: 'Georgia',
-      HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois', IN: 'Indiana', IA: 'Iowa',
-      KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana', ME: 'Maine', MD: 'Maryland',
-      MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota', MS: 'Mississippi',
-      MO: 'Missouri', MT: 'Montana', NE: 'Nebraska', NV: 'Nevada',
-      NH: 'New Hampshire', NJ: 'New Jersey', NM: 'New Mexico', NY: 'New York',
-      NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma',
-      OR: 'Oregon', PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina',
-      SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont',
-      VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
-      DC: 'District of Columbia'
-    };
-
+    // Debounce helper
     function debounce(fn, delay) {
-      let tid;
+      let timeoutId;
       return (...args) => {
-        clearTimeout(tid);
-        tid = setTimeout(() => fn(...args), delay);
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
       };
     }
 
-    let allData = [];
-    let uniqueNames = [];
-    let uniqueStateCodes = [];
+    // Code → full labels
+    const typeMap = {
+      'C':'Current Filing','O':'Original Filing',
+      'W':'Withdrawn Filing','X':'Exempt Filing',
+      'P':'Periodic Filing','A':'Amendment Filing',
+      'D':'Deleted Filing','T':'Terminated Filing'
+    };
+    const stateMap = {
+      'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas',
+      'CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware',
+      'FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho',
+      'IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas',
+      'KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland',
+      'MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi',
+      'MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada',
+      'NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York',
+      'NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma',
+      'OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina',
+      'SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah',
+      'VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia',
+      'WI':'Wisconsin','WY':'Wyoming','DC':'District of Columbia',
+      'AS':'American Samoa','AQ':'Antarctica'
+    };
+
+    let allData = [], uniqueNames = [], uniqueStates = [], uniqueTrans = [], uniqueYears = [];
+
+    function renderRows(data) {
+      const body = document.getElementById('disclosureBody');
+      body.innerHTML = '';
+      if (!data.length) {
+        body.innerHTML = `<tr><td colspan="5">No data available.</td></tr>`;
+        return;
+      }
+      data.forEach(e => {
+        const rawType = e.transaction_type ?? e.type ?? '';
+        const displayType = typeMap[rawType] || rawType || 'Not Available';
+        const abbr = (e.state||'').slice(0,2).toUpperCase();
+        const displayState = stateMap[abbr] || abbr;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${e.name}</td>
+          <td>${displayState}</td>
+          <td>${displayType}</td>
+          <td>${e.date}</td>
+          <td>${e.year}</td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    function showSuggestions(list, boxId, inputId) {
+      const box = document.getElementById(boxId);
+      box.innerHTML = '';
+      if (!list.length) { box.style.display = 'none'; return; }
+      list.slice(0,5).forEach(val => {
+        const div = document.createElement('div');
+        div.textContent = val;
+        div.onclick = () => {
+          document.getElementById(inputId).value = val;
+          box.style.display = 'none';
+          applyFilters();
+        };
+        box.appendChild(div);
+      });
+      box.style.display = 'block';
+    }
+
+    function applyFilters() {
+      const n = document.getElementById('nameFilter').value.toLowerCase();
+      const s = document.getElementById('stateFilter').value.toLowerCase();
+      const t = document.getElementById('transactionFilter').value;
+      const y = document.getElementById('yearFilter').value;
+      const filtered = allData.filter(e => {
+        const matchName = e.name.toLowerCase().includes(n);
+        const abbr = (e.state||'').slice(0,2).toUpperCase();
+        const matchState = (stateMap[abbr]||abbr).toLowerCase().includes(s);
+        const rawT = e.transaction_type ?? e.type ?? '';
+        const displayT = typeMap[rawT]||rawT||'';
+        const matchT = !t || displayT === t;
+        const matchY = !y || e.year === y;
+        return matchName && matchState && matchT && matchY;
+      });
+      renderRows(filtered);
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.filter-container')) {
+        document.getElementById('nameSuggestionBox').style.display = 'none';
+        document.getElementById('stateSuggestionBox').style.display = 'none';
+      }
+    });
 
     fetch('/api/disclosures')
       .then(r => r.json())
       .then(data => {
-        allData = data;
-        uniqueNames = [...new Set(data.map(d => d.name))].sort();
-        uniqueStateCodes = [
-          ...new Set(data.map(d => (d.state.match(/^[A-Za-z]+/) || [''])[0]))
-        ].filter(c => c).sort();
-        populateFilters(data);
-        applyFilters();
+        allData = Array.isArray(data) ? data : [];
+        uniqueNames = [...new Set(allData.map(e => e.name))].sort();
+        uniqueStates = [...new Set(allData.map(e => {
+          const ab = (e.state||'').slice(0,2).toUpperCase();
+          return stateMap[ab] || ab;
+        }))].sort();
+        uniqueTrans = [...new Set(allData.map(e => {
+          const rt = e.transaction_type ?? e.type ?? '';
+          return typeMap[rt] || rt || '';
+        }))].filter(t => t.length > 1).sort();
+        uniqueYears = [...new Set(allData.map(e => e.year))].sort();
+
+        renderRows(allData);
+
+        const txSel = document.getElementById('transactionFilter');
+        uniqueTrans.forEach(t => {
+          const o = document.createElement('option');
+          o.value = o.textContent = t;
+          txSel.appendChild(o);
+        });
+
+        const yrSel = document.getElementById('yearFilter');
+        uniqueYears.forEach(y => {
+          const o = document.createElement('option');
+          o.value = o.textContent = y;
+          yrSel.appendChild(o);
+        });
+
+        const nameInput  = document.getElementById('nameFilter');
+        const stateInput = document.getElementById('stateFilter');
+
+        nameInput.addEventListener('input',
+          debounce(() => {
+            const v = nameInput.value.toLowerCase();
+            showSuggestions(uniqueNames.filter(n => n.toLowerCase().includes(v)),
+                            'nameSuggestionBox','nameFilter');
+            applyFilters();
+          }, 250)
+        );
+        stateInput.addEventListener('input',
+          debounce(() => {
+            const v = stateInput.value.toLowerCase();
+            showSuggestions(uniqueStates.filter(s => s.toLowerCase().includes(v)),
+                            'stateSuggestionBox','stateFilter');
+            applyFilters();
+          }, 250)
+        );
+        document.getElementById('transactionFilter').addEventListener('change',
+          debounce(applyFilters, 100)
+        );
+        document.getElementById('yearFilter').addEventListener('change',
+          debounce(applyFilters, 100)
+        );
       })
       .catch(() => {
-        document.getElementById('disclosureBody').innerHTML =
-          '<tr><td colspan="5">Failed to load data.</td></tr>';
+        document.getElementById('disclosureBody').innerHTML = `<tr><td colspan="5">Failed to load data.</td></tr>`;
       });
-
-    function populateFilters(data) {
-      // transaction types
-      [...new Set(data.map(d => d.transaction_type))].sort().forEach(t => {
-        const o = document.createElement('option');
-        o.value = o.textContent = t;
-        document.getElementById('transactionFilter').appendChild(o);
-      });
-      // years
-      [...new Set(data.map(d => d.year))].sort((a,b) => a-b).forEach(y => {
-        const o = document.createElement('option');
-        o.value = o.textContent = y;
-        document.getElementById('yearFilter').appendChild(o);
-      });
-      // events
-      document.getElementById('nameFilter')
-        .addEventListener('input', debounce(handleNameInput, 100));
-      document.getElementById('stateFilter')
-        .addEventListener('input', debounce(handleStateInput, 100));
-      document.getElementById('transactionFilter')
-        .addEventListener('change', debounce(applyFilters, 100));
-      document.getElementById('yearFilter')
-        .addEventListener('change', debounce(applyFilters, 100));
-
-      document.getElementById('nameSuggestionBox')
-        .addEventListener('click', e => {
-          if (!e.target.matches('.suggestion')) return;
-          const box = document.getElementById('nameSuggestionBox');
-          document.getElementById('nameFilter').value = e.target.textContent;
-          box.innerHTML = '';
-          box.style.display = 'none';
-          applyFilters();
-        });
-
-      document.getElementById('stateSuggestionBox')
-        .addEventListener('click', e => {
-          if (!e.target.matches('.suggestion')) return;
-          const box = document.getElementById('stateSuggestionBox');
-          document.getElementById('stateFilter').value = e.target.dataset.code;
-          box.innerHTML = '';
-          box.style.display = 'none';
-          applyFilters();
-        });
-
-      // hide suggestion boxes on outside click
-      document.addEventListener('click', e => {
-        if (!e.target.closest('#nameFilter') && !e.target.closest('#nameSuggestionBox')) {
-          document.getElementById('nameSuggestionBox').style.display = 'none';
-        }
-        if (!e.target.closest('#stateFilter') && !e.target.closest('#stateSuggestionBox')) {
-          document.getElementById('stateSuggestionBox').style.display = 'none';
-        }
-      });
-    }
-
-    function handleNameInput(e) {
-      const val = e.target.value.toLowerCase();
-      const box = document.getElementById('nameSuggestionBox');
-      if (!val) {
-        box.style.display = 'none';
-        box.innerHTML = '';
-        applyFilters();
-        return;
-      }
-      const suggestions = uniqueNames.filter(n =>
-        n.toLowerCase().includes(val)
-      ).slice(0, 5);
-      box.style.display = suggestions.length ? 'block' : 'none';
-      box.innerHTML = suggestions.map(n =>
-        `<div class="suggestion">${n}</div>`
-      ).join('');
-      applyFilters();
-    }
-
-    function handleStateInput(e) {
-      const val = e.target.value.toLowerCase();
-      const box = document.getElementById('stateSuggestionBox');
-      if (!val) {
-        box.style.display = 'none';
-        box.innerHTML = '';
-        applyFilters();
-        return;
-      }
-      const matches = uniqueStateCodes.filter(code => {
-        const name = stateMapping[code] || code;
-        return code.toLowerCase().includes(val) ||
-               name.toLowerCase().includes(val);
-      }).slice(0, 5);
-      box.style.display = matches.length ? 'block' : 'none';
-      box.innerHTML = matches.map(code => {
-        const name = stateMapping[code] || code;
-        return `<div class="suggestion" data-code="${code}">${name}</div>`;
-      }).join('');
-      applyFilters();
-    }
-
-    function applyFilters() {
-      const nameVal = document.getElementById('nameFilter').value.toLowerCase();
-      const stateVal = document.getElementById('stateFilter').value;
-      const transVal = document.getElementById('transactionFilter').value;
-      const yearVal = document.getElementById('yearFilter').value;
-
-      const filtered = allData.filter(d => {
-        const code = (d.state.match(/^[A-Za-z]+/) || [''])[0];
-        return d.name.toLowerCase().includes(nameVal) &&
-               (stateVal === '' || code === stateVal) &&
-               (transVal === '' || d.transaction_type === transVal) &&
-               (yearVal === '' || d.year.toString() === yearVal);
-      });
-      renderTable(filtered);
-    }
-
-    function renderTable(rows) {
-      const tbody = document.getElementById('disclosureBody');
-      tbody.innerHTML = '';
-      rows.forEach(d => {
-        const code = (d.state.match(/^[A-Za-z]+/) || [''])[0];
-        const stateName = stateMapping[code] || code;
-        const nameButton = `
-          <button
-            type="button"
-            class="rep-button"
-            onclick="
-              window.location.href =
-                '/profile?name=${encodeURIComponent(d.name)}' +
-                '&state=${encodeURIComponent(code)}' +
-                '&transaction_type=${encodeURIComponent(d.transaction_type)}' +
-                '&year=${encodeURIComponent(d.year)}' +
-                '&symbol=${encodeURIComponent(d.symbol)}'
-            "
-          >${d.name}</button>
-        `.trim();
-
-        const tr = `<tr>
-          <td>${nameButton}</td>
-          <td>${stateName}</td>
-          <td>${d.transaction_type}</td>
-          <td>${d.year}</td>
-          <td>${d.symbol}</td>
-        </tr>`;
-        tbody.insertAdjacentHTML('beforeend', tr);
-      });
-    }
   </script>
 </body>
 </html>
