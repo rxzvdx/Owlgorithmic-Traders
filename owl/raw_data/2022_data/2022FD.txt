@@ -2234,6 +2234,7 @@ Hon.	Schiff	Adam B.		X	CA30	2022	7/18/2023	30019335
 Ms.	Schiller	Margaret Ann		C	FL01	2022	7/19/2022	8219095
 	Schmitt	Colin J.		C	NY18	2022	5/15/2022	10048383
 Hon.	Schneider	Bradley S.		A	IL10	2022	8/10/2024	10062655
+Hon.	Schneider	Bradley S.		A	IL10	2022	6/10/2025	10070451
 Hon.	Schneider	Bradley S.		O	IL10	2022	8/5/2023	10051452
 Hon.	Schneider	Bradley S.		P	IL10	2022	3/17/2022	20020104
 Hon.	Schneider	Bradley S.		P	IL10	2022	8/13/2022	20021496
