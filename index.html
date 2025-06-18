@@ -1,0 +1,131 @@
+<!-- 
+Author(s): 
+    Antonio Rosado
+    Kashan Khan
+    Imad Khan
+    Alexander Schifferle
+    Mike Kheang
+Assignment: 
+    Senior Project (Summer 2025) - "index"
+Last Update: 
+    June 8 2025
+Purpose: 
+    Main landing page -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Owlgorithmic Traders</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dark-theme">
+
+    <!-- HEADER + NAV -->
+    <div id="header">
+        <div class="container">
+            <nav>
+                <img src="static/images/logo.png" class="logo">
+                <ul>
+                    <li><a href="#header">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                    <li><a href="{{ url_for('chart_list') }}">View Live Charts</a></li>
+                    
+                    {% if google.authorized %}
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    {% endif %}
+
+                </ul>
+            </nav>
+
+            <!-- Stock Ticker -->
+            <div id="stock-ticker-container">
+                <div id="stock-ticker"></div>
+            </div>
+
+            <div class="header-content">
+                <h2 class="motto">
+                    Automate. Analyze. Outperform.
+                </h2>
+                <h1 class="hero-title">Welcome to <span>Owlgorithmic Traders</span></h1>
+                <p class="hero-subtext">Your real-time automated edge in the stock market</p>
+
+                {% if not google.authorized %}
+                <div class="auth-buttons hero-buttons">
+                    <a class="btn primary" href="{{ url_for('login') }}">Log in with Google</a>
+                    <a class="btn secondary" href="{{ url_for('login') }}">Sign up with Google</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATED USER VIEW -->
+    <div class="container">
+        {% if google.authorized %}
+            <p class="user-info">Logged in as: <strong>{{ user_email }}</strong></p>
+            <a class="btn logout" href="{{ url_for('logout') }}">Log Out</a>
+
+            <h2 class="title">Select a Year</h2>
+            <form method="POST" action="{{ url_for('download') }}" class="year-form">
+                {% for y in ['2021', '2022', '2023', '2024', '2025'] %}
+                    <button class="btn year" type="submit" name="year" value="{{ y }}">{{ y }}</button>
+                {% endfor %}
+            </form>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for category, msg in messages %}
+                            <li class="{{ category }}">{{ msg }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+    </div>
+
+    <!-- ABOUT Section -->
+    <section id="about" class="page-section">
+        <div class="container">
+            <h2>About Us</h2>
+            <p>Owlgorithmic Traders streamlines the extraction and analysis of SEC filings, turning dense financial disclosures into clear, easy to understand insights. Built for retail investors, the platform delivers real-time updates and empowers users to stay ahead with simplified, actionable information for smarter investing.</p>
+        </div>
+    </section>
+
+    <!-- SERVICES Section -->
+    <section id="services" class="page-section">
+        <div class="container">
+            <h2>Our Services</h2>
+            <ul class="services-list">
+                <li>
+                    <strong>Real-Time Market Updates</strong><br>
+                    <span>Track market-moving SEC filings as they happen, directly through your personalized dashboard. Our system continuously monitors updates, highlights key changes, and keeps your insights current, no manual searching required.</span>
+                </li>
+                <li>
+                    <strong>Smart Alerts via SMS</strong><br>
+                    <span>Stay informed with instant alerts and updates whenever a new disclosure or filing is released, so you never miss a market moving event.</span>
+                </li>
+                <li>
+                    <strong>Investment Insights Dashboard</strong><br>
+                    <span>Our platform presents key data points, trends, and risk indicators in a clear, visual format, giving you the confidence to make smarter financial decisions.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- CONTACT Section -->
+    <section id="contact" class="page-section">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p>Email: support@owlgorithmic.com</p>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/stock-ticker.js') }}"></script>
+</body>
+</html>
