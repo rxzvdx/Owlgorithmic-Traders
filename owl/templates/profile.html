@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title id="profileTitle">Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dark-theme">
+
+  <!-- NAV BAR -->
+  <nav>
+    <a href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="Logo">
+    </a>
+    <ul>
+      <li><a href="{{ url_for('index') }}">Home</a></li>
+      <li><a href="{{ url_for('chart_list') }}">Live Charts</a></li>
+      <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    </ul>
+  </nav>
+
+  <div class="container" style="padding:2rem;">
+    <h1 id="profileName">Profile</h1>
+
+    <div class="table-container" style="margin-top:1rem;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="border-bottom:1px solid #444; padding:8px; text-align:left;">State</th>
+            <th style="border-bottom:1px solid #444; padding:8px; text-align:left;">Transaction</th>
+            <th style="border-bottom:1px solid #444; padding:8px; text-align:left;">Year</th>
+            <th style="border-bottom:1px solid #444; padding:8px; text-align:left;">Symbol</th>
+          </tr>
+        </thead>
+        <tbody id="profileBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name');
+    if (!name) {
+      document.body.innerHTML = '<p>No representative specified.</p>';
+      throw '';
+    }
+    document.getElementById('profileName').textContent = name;
+    document.getElementById('profileTitle').textContent = name + ' — Profile';
+
+    fetch('/api/disclosures')
+      .then(r => r.json())
+      .then(all => {
+        const trades = all.filter(e => e.name === name);
+        const body = document.getElementById('profileBody');
+        if (trades.length === 0) {
+          body.innerHTML = `<tr><td colspan="4">No disclosures found.</td></tr>`;
+        } else {
+          body.innerHTML = trades.map(d => `
+            <tr>
+              <td style="padding:6px 8px;">${d.state}</td>
+              <td style="padding:6px 8px;">${d.transaction_type}</td>
+              <td style="padding:6px 8px;">${d.year}</td>
+              <td style="padding:6px 8px;">${d.symbol}</td>
+            </tr>
+          `).join('');
+        }
+      })
+      .catch(() => {
+        document.getElementById('profileBody').innerHTML =
+          `<tr><td colspan="4">Failed to load disclosures.</td></tr>`;
+      });
+  </script>
+</body>
+</html>

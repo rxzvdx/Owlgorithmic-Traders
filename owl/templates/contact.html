@@ -1,16 +1,17 @@
 <!--
-Author(s): 
+Author(s):
     Antonio Rosado
     Kashan Khan
     Imad Khan
     Alexander Schifferle
     Mike Kheang
-Assignment: 
+Assignment:
     Senior Project (Summer 2025) - "contact"
-Last Update: 
+Last Update:
     June 8 2025
-Purpose: 
-    Prompt user with contact form that goes to a spreadsheet. -->
+Purpose:
+    Prompt user with contact form that goes to a spreadsheet.
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,13 +21,27 @@ Purpose:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body class="dark-theme">
-    <div class="top-right-nav">
-        <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
+
+    <!-- NAVBAR -->
+    <div id="header">
+      <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
+        <!-- Logo on the top left -->
+        <a href="{{ url_for('index') }}">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+        </a>
+        <!-- Nav: Home, Live Charts, Dashboard -->
+        <nav>
+          <ul class="nav-list" style="display:flex; list-style:none; margin:0; padding:0;">
+            <li style="margin:0 15px;"><a href="{{ url_for('index') }}">Home</a></li>
+            <li style="margin:0 15px;"><a href="{{ url_for('chart_list') }}">Live Charts</a></li>
+            <li style="margin:0 15px;"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+          </ul>
+        </nav>
+      </div>
     </div>
 
-    <div class="contact-container">
+    <div class="contact-container" style="padding:2rem;">
         <h2>Contact Us</h2>
         <form name="submit-to-google-sheet">
             <input type="text" name="Name" placeholder="Your Name" required>
@@ -38,39 +53,34 @@ Purpose:
         <span id="msg"></span>
     </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxkF_e9MorkNX2uKMCQW8q8UdYmRJUMwdYl1q-djvxTMtD45odSpqOEZQ3EcZdUf6ZO4g/exec';
-        const form = document.forms['submit-to-google-sheet'];
-        const msg = document.getElementById("msg");
-        const submitButton = form.querySelector('button[type="submit"]');
+    <script>
+        const scriptURL = '{{ url_for("static", filename="js/form-submission.js") }}'
+        const form = document.forms['submit-to-google-sheet']
+        const msg = document.getElementById('msg')
 
         form.addEventListener('submit', e => {
-            e.preventDefault();
-
-            // disable button to prevent multiple submissions
-            submitButton.disabled = true;
-            const originalText = submitButton.textContent;
-            submitButton.textContent = "Sending...";
-
+            e.preventDefault()
+            const submitButton = form.querySelector('button[type="submit"]')
+            const originalText = submitButton.textContent
+            submitButton.disabled = true
+            submitButton.textContent = 'Sending...'
             fetch(scriptURL, { method: 'POST', body: new FormData(form) })
                 .then(response => {
-                    msg.innerHTML = "Message sent successfully!";
-                    setTimeout(() => msg.innerHTML = "", 5000);
-                    form.reset();
+                    msg.innerHTML = "Message sent successfully!"
+                    form.reset()
                 })
                 .catch(error => {
-                    msg.innerHTML = "An error occurred.";
-                    console.error('Error!', error.message);
+                    msg.innerHTML = "An error occurred."
+                    console.error('Error!', error.message)
                 })
                 .finally(() => {
                     setTimeout(() => {
-                        submitButton.disabled = false;
-                        submitButton.textContent = originalText;
-                    }, 5000);
-                });
-        });
-    });
-</script>
+                        submitButton.disabled = false
+                        submitButton.textContent = originalText
+                    }, 5000)
+                })
+        })
+    </script>
+
 </body>
 </html>

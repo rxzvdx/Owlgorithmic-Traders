@@ -569,3 +569,34 @@ nav ul li a:hover::after {
 body {
     padding-bottom: 50px;
 }
+
+.rep-button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/* Suggestion dropdown overall */
+.suggestion-box {
+  background-color: #000;      /* black background */
+  border: 1px solid #fff;      /* white border */
+  color: #fff;                 /* white text */
+}
+
+/* Individual suggestion items */
+.suggestion-box .suggestion {
+  padding: 8px;
+  background-color: #000;      /* black */
+  color: #fff;                 /* white */
+  cursor: pointer;
+}
+
+/* Hover state for suggestions */
+.suggestion-box .suggestion:hover {
+  background-color: #fff;      /* white background */
+  color: #000;                 /* black text */
+}
