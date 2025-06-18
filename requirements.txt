@@ -1,0 +1,10 @@
+requests
+PyMuPDF
+PyPDF2
+mysql-connector-python
+yfinance
+pandas
+plyer
+Flask
+Flask-Dance
+oauthlib
