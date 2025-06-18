@@ -5,7 +5,7 @@
 #    Alexander Schifferle
 #    Mike Kheang
 # Assignment: 
-#    Senior Project (Summer 2025) - "Stock Bot"
+#    Senior Project (Summer 2025) - "fetch.py"
 # Last Update: 
 #    June 8 2025
 # Purpose: 
@@ -16,7 +16,7 @@ import os
 import json
 from collections import defaultdict
 
-HOUSE_DIR = "House"
+HOUSE_DIR = "house"
 
 def summarize_disclosures(base_dir=HOUSE_DIR):
     reps_data = defaultdict(lambda: defaultdict(list))  # {rep_name: {year: [pdfs]}}

@@ -5,7 +5,7 @@
 #    Alexander Schifferle
 #    Mike Kheang
 # Assignment: 
-#    Senior Project (Summer 2025) - "desktop_notifs"
+#    Senior Project (Summer 2025) - "desktop_notifs.py"
 # Last Update: 
 #    June 16th 2025
 # Purpose: 
