@@ -45,6 +45,10 @@ import json
 # Desktop notification
 from utils.desktop_notifs import notify_user # type: ignore
 
+# Add this near the top of the file with other imports
+from functools import lru_cache
+from datetime import datetime, timedelta
+
 # Initilize Flask app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -203,7 +207,7 @@ stock_info = {
     'NKE': 'Nike Inc. designs, markets, and sells athletic apparel, footwear, and equipment.',
     'ORCL': 'Oracle Corporation provides database software and cloud computing infrastructure.',
     'COST': 'Costco Wholesale is a membership-based warehouse club with global operations.',
-    'MCD': 'McDonald’s Corporation is the largest fast-food chain in the world by revenue.',
+    'MCD': "McDonald's Corporation is the largest fast-food chain in the world by revenue.",
     'LLY': 'Eli Lilly and Company is a pharmaceutical company known for diabetes and cancer therapies.',
     'DHR': 'Danaher Corporation designs and manufactures medical and industrial tools and technology.',
     'MDT': 'Medtronic plc is a medical technology company specializing in devices and therapies.',
@@ -220,20 +224,47 @@ stock_info = {
     'AVGO': 'Broadcom Inc. is a semiconductor and infrastructure software company.'
 }
 
+# Add this after the stock_info dictionary
+# Cache for stock data
+stock_cache = {}
+CACHE_DURATION = timedelta(minutes=5)
 
-#dashboard
 @app.route('/api/stock/<symbol>')
 def stock_api(symbol):
-    import yfinance as yf
-    data = yf.Ticker(symbol)
-    hist = data.history(period='1mo')
+    try:
+        # Check cache first
+        current_time = datetime.now()
+        if symbol in stock_cache:
+            cached_data, cache_time = stock_cache[symbol]
+            if current_time - cache_time < CACHE_DURATION:
+                return jsonify(cached_data)
 
-    if hist.empty:
-        return {'error': 'No data found'}, 404
-
-    hist.reset_index(inplace=True)
-    hist['Date'] = hist['Date'].astype(str)
-    return hist.to_json(orient='records')
+        # If not in cache or cache expired, fetch new data
+        stock = yf.Ticker(symbol)
+        info = stock.info
+        
+        # Get the current price and previous close
+        current_price = info.get('regularMarketPrice', 0)
+        previous_close = info.get('regularMarketPreviousClose', current_price)
+        
+        # Calculate the percentage change
+        if previous_close and previous_close != 0:
+            change = ((current_price - previous_close) / previous_close) * 100
+        else:
+            change = 0
+            
+        data = {
+            'symbol': symbol,
+            'price': current_price,
+            'change': change
+        }
+        
+        # Update cache
+        stock_cache[symbol] = (data, current_time)
+            
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/contact')
@@ -351,7 +382,7 @@ def serve_disclosure(year_folder, filename):
 def create_plan():
     if not google.authorized:
         flash("Please log in to create your plan.", "error")
-        return redirecturl_for("index")
+        return redirect(url_for("index"))
     
     # placeholder for user info from db
     user = get_user_by_email(session.get('email'))

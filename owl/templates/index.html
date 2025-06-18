@@ -40,6 +40,12 @@ Purpose:
 
                 </ul>
             </nav>
+
+            <!-- Stock Ticker -->
+            <div id="stock-ticker-container">
+                <div id="stock-ticker"></div>
+            </div>
+
             <div class="header-content">
                 <h2 class="motto">
                     Automate. Analyze. Outperform.
@@ -119,5 +125,7 @@ Purpose:
         </div>
     </section>
 
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/stock-ticker.js') }}"></script>
 </body>
 </html>
