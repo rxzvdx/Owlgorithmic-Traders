@@ -1,31 +1,38 @@
 <!--
-Author(s): 
+  Author(s):
     Antonio Rosado
     Kashan Khan
     Imad Khan
     Alexander Schifferle
     Mike Kheang
-Assignment: 
-    Senior Project (Summer 2025) - "chart_list"
-Last Update: 
-    June 8 2025
-Purpose: 
-    Creates a chart of top 50 stocks as of now and their stats. -->
+  Assignment:
+    Senior Project (Summer 2025) – “chart_list.html”
+  Last Update:
+    Revised June 19, 2025
+  Purpose:
+    Render the top 50 company names as buttons so the user can select and view each stock’s chart.
+-->
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Select a Stock Chart</title>
     <meta charset="UTF-8">
+    <title>Select a Stock Chart</title>
+    <!-- Link to main stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="dark-theme">
+    <!-- Top-right navigation: Back button to return to home/index -->
     <div class="top-right-nav">
         <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
     </div>
+
+    <!-- Main container for listing stock chart buttons -->
     <div class="chart-list-container">
         <h1 class="chart-heading">Top 50 Companies Stock Charts</h1>
+
         <div class="stock-list">
+            {# Define mapping of ticker symbols to company names #}
             {% set names = {
                 'AAPL': 'Apple', 'MSFT': 'Microsoft', 'NVDA': 'Nvidia', 'AMZN': 'Amazon', 'GOOGL': 'Google',
                 'META': 'Meta', 'TSLA': 'Tesla', 'BRK.B': 'Berkshire Hathaway', 'UNH': 'UnitedHealth Group',
@@ -39,9 +46,15 @@ Purpose:
                 'QCOM': 'Qualcomm', 'TXN': 'Texas Instruments', 'UNP': 'Union Pacific', 'LIN': 'Linde', 'AVGO': 'Broadcom'
             } %}
 
+            {# Loop through each ticker symbol and render a form button #}
             {% for stock in names.keys() %}
                 <form method="GET" action="{{ url_for('view_chart', symbol=stock|replace(':', '__')) }}">
-                    <button class="btn primary stock-button" type="submit">{{ names[stock] }}</button>
+                    <button
+                        class="btn primary stock-button"
+                        type="submit"
+                    >
+                        {{ names[stock] }}
+                    </button>
                 </form>
             {% endfor %}
         </div>

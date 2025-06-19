@@ -1,76 +1,94 @@
 <!--
-Author(s): 
+  Author(s):
     Antonio Rosado
     Kashan Khan
     Imad Khan
     Alexander Schifferle
     Mike Kheang
-Assignment: 
-    Senior Project (Summer 2025) - "contact"
-Last Update: 
-    June 8 2025
-Purpose: 
-    Prompt user with contact form that goes to a spreadsheet. -->
+  Assignment:
+    Senior Project (Summer 2025) – “contact.html”
+  Last Update:
+    Revised June 19, 2025
+  Purpose:
+    Display a contact form for users to submit inquiries, which posts entries to a Google Sheets backend.
+-->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Page title shown in browser tab -->
     <title>Contact Us - Owlgorithmic Traders</title>
+    <!-- Ensure proper scaling on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to site-wide styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body class="dark-theme">
+    <!-- Back button in the top-right corner for easy navigation -->
     <div class="top-right-nav">
         <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
     </div>
 
+    <!-- Contact form container -->
     <div class="contact-container">
         <h2>Contact Us</h2>
+        <!-- Form sends data to Google Apps Script URL -->
         <form name="submit-to-google-sheet">
+            <!-- User name field -->
             <input type="text" name="Name" placeholder="Your Name" required>
+            <!-- User email field -->
             <input type="email" name="Email" placeholder="Your Email" required>
+            <!-- Subject line -->
             <textarea name="Subject" rows="1" placeholder="Subject" required></textarea>
+            <!-- Message body -->
             <textarea name="message" rows="6" placeholder="Your Message" required></textarea>
+            <!-- Submit button -->
             <button type="submit" class="btn btn2">Submit</button>
         </form>
+        <!-- Message area for success/error feedback -->
         <span id="msg"></span>
     </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxkF_e9MorkNX2uKMCQW8q8UdYmRJUMwdYl1q-djvxTMtD45odSpqOEZQ3EcZdUf6ZO4g/exec';
-        const form = document.forms['submit-to-google-sheet'];
-        const msg = document.getElementById("msg");
-        const submitButton = form.querySelector('button[type="submit"]');
-
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-
-            // disable button to prevent multiple submissions
-            submitButton.disabled = true;
+    <!-- Inline script to handle form submission via fetch to Google Sheets -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // URL of the deployed Google Apps Script
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxkF_e9MorkNX2uKMCQW8q8UdYmRJUMwdYl1q-djvxTMtD45odSpqOEZQ3EcZdUf6ZO4g/exec';
+            const form = document.forms['submit-to-google-sheet'];
+            const msg = document.getElementById("msg");
+            const submitButton = form.querySelector('button[type="submit"]');
             const originalText = submitButton.textContent;
-            submitButton.textContent = "Sending...";
 
-            fetch(scriptURL, { method: 'POST', body: new FormData(form) })
-                .then(response => {
-                    msg.innerHTML = "Message sent successfully!";
-                    setTimeout(() => msg.innerHTML = "", 5000);
-                    form.reset();
-                })
-                .catch(error => {
-                    msg.innerHTML = "An error occurred.";
-                    console.error('Error!', error.message);
-                })
-                .finally(() => {
-                    setTimeout(() => {
-                        submitButton.disabled = false;
-                        submitButton.textContent = originalText;
-                    }, 5000);
-                });
+            form.addEventListener('submit', e => {
+                e.preventDefault();  // Prevent normal form submission
+
+                submitButton.disabled = true;        // Disable to prevent multiple clicks
+                submitButton.textContent = "Sending...";
+
+                // Post form data to Google Apps Script
+                fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+                    .then(response => {
+                        // Show success message and reset form
+                        msg.textContent = "Message sent successfully!";
+                        setTimeout(() => msg.textContent = "", 5000);
+                        form.reset();
+                    })
+                    .catch(error => {
+                        // Show error message on failure
+                        msg.textContent = "An error occurred.";
+                        console.error('Error!', error.message);
+                    })
+                    .finally(() => {
+                        // Re-enable button after a delay
+                        setTimeout(() => {
+                            submitButton.disabled = false;
+                            submitButton.textContent = originalText;
+                        }, 5000);
+                    });
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>

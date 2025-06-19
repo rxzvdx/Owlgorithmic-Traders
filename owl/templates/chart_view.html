@@ -1,30 +1,38 @@
-<!-- 
-Author(s): 
+<!--
+  Author(s):
     Antonio Rosado
     Kashan Khan
     Imad Khan
     Alexander Schifferle
     Mike Kheang
-Assignment: 
-    Senior Project (Summer 2025) - "chart_view"
-Last Update: 
-    June 8 2025
-Purpose: 
-    Creates a view of top 50 stocks as of now and their stats. -->
-    
+  Assignment:
+    Senior Project (Summer 2025) – “chart_view.html”
+  Last Update:
+    Revised June 19, 2025
+  Purpose:
+    Render a live TradingView chart for the selected stock along with company overview details.
+-->
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>{{ symbol }} Chart</title>
     <meta charset="UTF-8">
+    <!-- Page title displays the ticker symbol -->
+    <title>{{ symbol }} Chart</title>
+    <!-- Main stylesheet for dark-theme and layout -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="dark-theme">
     <div class="chart-view-container">
+        <!-- Navigation back to list of all stocks -->
         <a href="{{ url_for('chart_list') }}" class="back-link">← Back to Stock List</a>
+
+        <!-- Heading showing the current symbol -->
         <h2>{{ symbol }} Live Stock Chart</h2>
+        <!-- Short description or note about the chart -->
         <p class="chart-description">{{ description }}</p>
 
+        <!-- Company overview section with key statistics -->
         <div class="company-overview">
             <h3>Company Overview</h3>
             <ul>
@@ -36,30 +44,34 @@ Purpose:
                 <li><strong>Dividend Yield:</strong> {{ overview.dividendYield }}</li>
                 <li><strong>52-Week High:</strong> {{ overview['52WeekHigh'] }}</li>
                 <li><strong>52-Week Low:</strong> {{ overview['52WeekLow'] }}</li>
-                <li><strong>Website:</strong> <a href="{{ overview.website }}" target="_blank">{{ overview.website }}</a></li>
+                <li>
+                    <strong>Website:</strong>
+                    <a href="{{ overview.website }}" target="_blank">{{ overview.website }}</a>
+                </li>
             </ul>
         </div>
 
+        <!-- Chart container embedding TradingView widget -->
         <div class="chart-container">
             <div class="tradingview-widget-container">
                 <div id="tradingview_chart"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script src="https://s3.tradingview.com/tv.js" type="text/javascript"></script>
                 <script type="text/javascript">
                     new TradingView.widget({
-                        "container_id": "tradingview_chart",
-                        "symbol": "{{ symbol }}",
-                        "interval": "D",
-                        "timezone": "Etc/UTC",
-                        "theme": "dark",
-                        "style": "1",
-                        "locale": "en",
-                        "toolbar_bg": "#f1f3f6",
-                        "enable_publishing": false,
-                        "hide_top_toolbar": false,
-                        "allow_symbol_change": true,
-                        "show_popup_button": true,
-                        "popup_width": "1000",
-                        "popup_height": "650"
+                        container_id: "tradingview_chart",
+                        symbol: "{{ symbol }}",
+                        interval: "D",
+                        timezone: "Etc/UTC",
+                        theme: "dark",
+                        style: "1",
+                        locale: "en",
+                        toolbar_bg: "#f1f3f6",
+                        enable_publishing: false,
+                        hide_top_toolbar: false,
+                        allow_symbol_change: true,
+                        show_popup_button: true,
+                        popup_width: "1000",
+                        popup_height: "650"
                     });
                 </script>
             </div>

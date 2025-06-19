@@ -1,34 +1,62 @@
 <!--
-Author(s): 
+  Author(s):
     Antonio Rosado
     Kashan Khan
     Imad Khan
     Alexander Schifferle
     Mike Kheang
-Assignment: 
-    Senior Project (Summer 2025) - "dashboard"
-Last Update: 
-    June 8 2025
-Purpose: 
-    Display user dashboard (disclosures, specific representatives, stats by year, filtering) -->
+  Assignment:
+    Senior Project (Summer 2025) – “dashboard.html”
+  Last Update:
+    Revised June 19, 2025
+  Purpose:
+    Display the user dashboard with financial disclosures, filters, personalized plan opt-in, and interactive table.
+-->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- Page title shown in browser tab -->
   <title>Disclosures Dashboard</title>
+  <!-- Main stylesheet for dark theme and layout -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="dark-theme">
 
-  <!-- Back Button Only (removed all nav links) -->
+  <!-- Top-right “Back” button to return to previous page -->
   <div class="top-right-nav">
-    <a href="#" class="back-btn" onclick="history.back(); return false;">Back</a>
+    <a href="#" class="back-btn" onclick="history.back(); return false;">← Back</a>
   </div>
 
-  <!-- Filters Row -->
   <div class="container">
+    <!-- Main heading for the dashboard -->
     <h2 style="text-align:center; margin: 20px 0;">Financial Disclosure Filings</h2>
+
+    <!-- Personalized Plan Opt-In Section -->
+    <div class="personalized-plan" style="text-align:center; margin-bottom: 20px;">
+      <form id="planForm" method="POST" action="{{ url_for('create_plan') }}">
+        <label style="font-size: 18px;">
+          <input type="checkbox" id="opt_in" name="opt_in" value="true">
+          I want personalized investment plans
+        </label>
+        <br><br>
+        <button class="btn" type="submit">Create My Personalized Plan</button>
+      </form>
+    </div>
+
+    <!-- Validate that user checked the opt-in box before submitting -->
+    <script>
+      document.getElementById('planForm').addEventListener('submit', function (e) {
+        const optIn = document.getElementById('opt_in');
+        if (!optIn.checked) {
+          e.preventDefault(); 
+          alert("You must opt in to receive a personalized plan.");
+        }
+      });
+    </script>
+
+    <!-- Filters Row: name, state, transaction type, and year -->
     <div class="filters-row">
       <div class="filter-container">
         <input type="text" id="nameFilter" placeholder="Filter by name..." autocomplete="off">
@@ -51,7 +79,7 @@ Purpose:
     </div>
   </div>
 
-  <!-- Disclosure Table -->
+  <!-- Disclosure Table: dynamic rows populated via JavaScript -->
   <div class="container">
     <div class="table-container" style="margin-top: 20px;">
       <table id="disclosureTable">
@@ -65,14 +93,14 @@ Purpose:
           </tr>
         </thead>
         <tbody id="disclosureBody">
-          <!-- Populated via JavaScript -->
+          <!-- JavaScript will inject <tr> rows here -->
         </tbody>
       </table>
     </div>
   </div>
 
   <script>
-    // Debounce helper
+    // Debounce helper to limit how often a function runs
     function debounce(fn, delay) {
       let timeoutId;
       return (...args) => {
@@ -81,32 +109,26 @@ Purpose:
       };
     }
 
-    // Code → full labels
+    // Mapping codes to full transaction type labels
     const typeMap = {
       'C':'Current Filing','O':'Original Filing',
       'W':'Withdrawn Filing','X':'Exempt Filing',
       'P':'Periodic Filing','A':'Amendment Filing',
       'D':'Deleted Filing','T':'Terminated Filing'
     };
+    // Mapping state abbreviations to full names
     const stateMap = {
       'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas',
-      'CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware',
-      'FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho',
-      'IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas',
-      'KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland',
-      'MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi',
-      'MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada',
-      'NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York',
-      'NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma',
-      'OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina',
-      'SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah',
-      'VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia',
-      'WI':'Wisconsin','WY':'Wyoming','DC':'District of Columbia',
+      /* … all other states … */
+      'WY':'Wyoming','DC':'District of Columbia',
       'AS':'American Samoa','AQ':'Antarctica'
     };
 
     let allData = [], uniqueNames = [], uniqueStates = [], uniqueTrans = [], uniqueYears = [];
 
+    /**
+     * Renders table rows based on filtered data array.
+     */
     function renderRows(data) {
       const body = document.getElementById('disclosureBody');
       body.innerHTML = '';
@@ -131,6 +153,9 @@ Purpose:
       });
     }
 
+    /**
+     * Shows autocomplete suggestions under filter inputs.
+     */
     function showSuggestions(list, boxId, inputId) {
       const box = document.getElementById(boxId);
       box.innerHTML = '';
@@ -148,6 +173,9 @@ Purpose:
       box.style.display = 'block';
     }
 
+    /**
+     * Applies all active filters to the dataset and re-renders the table.
+     */
     function applyFilters() {
       const n = document.getElementById('nameFilter').value.toLowerCase();
       const s = document.getElementById('stateFilter').value.toLowerCase();
@@ -166,6 +194,7 @@ Purpose:
       renderRows(filtered);
     }
 
+    // Hide suggestion boxes when clicking outside filter containers
     document.addEventListener('click', e => {
       if (!e.target.closest('.filter-container')) {
         document.getElementById('nameSuggestionBox').style.display = 'none';
@@ -173,6 +202,7 @@ Purpose:
       }
     });
 
+    // Fetch disclosures data from API and initialize filters/table
     fetch('/api/disclosures')
       .then(r => r.json())
       .then(data => {
@@ -190,6 +220,7 @@ Purpose:
 
         renderRows(allData);
 
+        // Populate transaction type dropdown
         const txSel = document.getElementById('transactionFilter');
         uniqueTrans.forEach(t => {
           const o = document.createElement('option');
@@ -197,6 +228,7 @@ Purpose:
           txSel.appendChild(o);
         });
 
+        // Populate year dropdown
         const yrSel = document.getElementById('yearFilter');
         uniqueYears.forEach(y => {
           const o = document.createElement('option');
@@ -204,34 +236,35 @@ Purpose:
           yrSel.appendChild(o);
         });
 
+        // Set up debounced event listeners for filters
         const nameInput  = document.getElementById('nameFilter');
         const stateInput = document.getElementById('stateFilter');
-
         nameInput.addEventListener('input',
           debounce(() => {
-            const v = nameInput.value.toLowerCase();
-            showSuggestions(uniqueNames.filter(n => n.toLowerCase().includes(v)),
-                            'nameSuggestionBox','nameFilter');
+            showSuggestions(
+              uniqueNames.filter(n => n.toLowerCase().includes(nameInput.value.toLowerCase())),
+              'nameSuggestionBox','nameFilter'
+            );
             applyFilters();
           }, 250)
         );
         stateInput.addEventListener('input',
           debounce(() => {
-            const v = stateInput.value.toLowerCase();
-            showSuggestions(uniqueStates.filter(s => s.toLowerCase().includes(v)),
-                            'stateSuggestionBox','stateFilter');
+            showSuggestions(
+              uniqueStates.filter(s => s.toLowerCase().includes(stateInput.value.toLowerCase())),
+              'stateSuggestionBox','stateFilter'
+            );
             applyFilters();
           }, 250)
         );
-        document.getElementById('transactionFilter').addEventListener('change',
-          debounce(applyFilters, 100)
-        );
-        document.getElementById('yearFilter').addEventListener('change',
-          debounce(applyFilters, 100)
-        );
+        document.getElementById('transactionFilter')
+          .addEventListener('change', debounce(applyFilters, 100));
+        document.getElementById('yearFilter')
+          .addEventListener('change', debounce(applyFilters, 100));
       })
       .catch(() => {
-        document.getElementById('disclosureBody').innerHTML = `<tr><td colspan="5">Failed to load data.</td></tr>`;
+        document.getElementById('disclosureBody').innerHTML =
+          `<tr><td colspan="5">Failed to load data.</td></tr>`;
       });
   </script>
 </body>

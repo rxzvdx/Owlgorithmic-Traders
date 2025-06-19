@@ -1,3 +1,20 @@
+/* 
+  Author(s):
+    Antonio Rosado
+    Kashan Khan
+    Imad Khan
+    Alexander Schifferle
+    Mike Kheang
+  Assignment:
+    Senior Project (Summer 2025) – “styles.css”
+  Last Update:
+    Revised June 19, 2025
+  Purpose:
+    Base styles and theme definitions for the web app,
+    including layout resets, navigation, hero section, buttons, pages, and
+    component-specific styling.
+*/
+
 /* ---------- Base Reset ---------- */
 * {
     margin: 0;

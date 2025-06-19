@@ -1,16 +1,17 @@
 <!--
-Author(s): 
+  Author(s):
     Antonio Rosado
     Kashan Khan
     Imad Khan
     Alexander Schifferle
     Mike Kheang
-Assignment: 
-    Senior Project (Summer 2025) - "disclosures"
-Last Update: 
-    June 8 2025
-Purpose: 
-    Display representatives along with respective filters --> 
+  Assignment:
+    Senior Project (Summer 2025) – “disclosures.html”
+  Last Update:
+    Revised June 19, 2025
+  Purpose:
+    Display representatives along with respective filters.
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +22,7 @@ Purpose:
 </head>
 <body class="dark-theme">
 
-  <!-- NAVBAR -->
+  <!-- NAVBAR: site navigation links -->
   <div id="header">
     <div class="container">
       <nav>
@@ -40,7 +41,7 @@ Purpose:
     </div>
   </div>
 
-  <!-- Filters -->
+  <!-- Filters Section: filter by name, year, and transaction type -->
   <div class="container page-section">
     <h1>Politician Disclosures</h1>
 
@@ -70,6 +71,7 @@ Purpose:
       <button onclick="resetFilters()">Reset</button>
     </div>
 
+    <!-- Disclosure Table: populated dynamically via JavaScript -->
     <div class="table-container">
       <table id="disclosureTable">
         <thead>
@@ -87,7 +89,10 @@ Purpose:
   </div>
 
   <script>
+    // Storage for fetched data
     let allData = [];
+
+    // Map short codes to full transaction type labels
     const typeMapping = {
       'C': 'Purchase',
       'P': 'Sale',
@@ -100,9 +105,11 @@ Purpose:
       'T': 'Transfer'
     };
 
+    // Fetch disclosures from API and initialize UI
     fetch('/api/disclosures')
       .then(response => response.json())
       .then(data => {
+        // Enrich each record with a full type label
         allData = data.map(item => ({
           ...item,
           typeFull: typeMapping[item.type] || item.type || 'N/A'
@@ -113,6 +120,9 @@ Purpose:
       })
       .catch(error => console.error('Error loading disclosures:', error));
 
+    /**
+     * Populate the year dropdown based on available data.
+     */
     function populateYearFilter() {
       const yearFilter = document.getElementById('yearFilter');
       const years = Array.from(new Set(allData.map(item => item.year))).sort();
@@ -124,6 +134,9 @@ Purpose:
       });
     }
 
+    /**
+     * Render table rows for the provided data array.
+     */
     function renderTable(data) {
       const tableBody = document.querySelector('#disclosureTable tbody');
       tableBody.innerHTML = '';
@@ -140,6 +153,9 @@ Purpose:
       });
     }
 
+    /**
+     * Apply filters based on user input and re-render the table.
+     */
     function applyFilters() {
       const name = document.getElementById('nameFilter').value.toLowerCase();
       const year = document.getElementById('yearFilter').value;
@@ -155,6 +171,9 @@ Purpose:
       renderTable(filtered);
     }
 
+    /**
+     * Reset all filters and show full dataset.
+     */
     function resetFilters() {
       document.getElementById('nameFilter').value = '';
       document.getElementById('yearFilter').value = '';
@@ -162,6 +181,5 @@ Purpose:
       renderTable(allData);
     }
   </script>
-
 </body>
 </html>

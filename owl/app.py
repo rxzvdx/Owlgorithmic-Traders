@@ -317,7 +317,6 @@ def dashboard():
 
 @app.route('/api/disclosures')
 def disclosures_api():
-    # This path is correct based on your screenshot
     raw_data_dir = os.path.join(os.path.dirname(__file__), 'raw_data')
 
     data = []
@@ -378,25 +377,34 @@ def serve_disclosure(year_folder, filename):
     folder_path = os.path.join(os.path.dirname(__file__), 'raw_data', year_folder)
     return send_from_directory(folder_path, filename)
 
+# dummy user lookup function, will replace later
+class MockUser:
+    def __init__(self, email):
+        self.email = email
+        self.first_name = email.split('@')[0].capitalize()
+        self.opt_in = True # user "opts in"
+
+def get_user_by_email(email):
+    # in prod, will fetch from db
+    return MockUser(email or "default@example.com")
+
+
 @app.route('/create_plan', methods=['POST'])
 def create_plan():
     if not google.authorized:
         flash("Please log in to create your plan.", "error")
         return redirect(url_for("index"))
-    
-    # placeholder for user info from db
+
+    opt_in_value = request.form.get('opt_in') == 'true'
     user = get_user_by_email(session.get('email'))
-    
-    # personalized plan logic here 
-    # ...
-    
-    # notify user only if they are opted in
+    user.opt_in = opt_in_value  # update based on form input
+
+    # Notify only if opted in
     if user.opt_in:
         notify_user(
             title="Your personalized plan is ready!",
             message=f"{user.first_name}, your personalized investment plan has been created. Check your dashboard for a full view!"
         )
-    flash("Your plan was created successfully.", "success")
     return redirect(url_for("dashboard"))
 
 if __name__ == '__main__':
