@@ -232,6 +232,11 @@ CACHE_DURATION = timedelta(minutes=5)
 @app.route('/api/stock/<symbol>')
 def stock_api(symbol):
     try:
+        # Normalize symbol for yfinance
+        if symbol.upper() == 'BRK.B':
+            yf_symbol = 'BRK-B'
+        else:
+            yf_symbol = symbol
         # Check cache first
         current_time = datetime.now()
         if symbol in stock_cache:
@@ -240,7 +245,7 @@ def stock_api(symbol):
                 return jsonify(cached_data)
 
         # If not in cache or cache expired, fetch new data
-        stock = yf.Ticker(symbol)
+        stock = yf.Ticker(yf_symbol)
         info = stock.info
         
         # Get the current price and previous close

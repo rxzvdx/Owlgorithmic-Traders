@@ -586,3 +586,11 @@ nav ul li a:hover::after {
 body {
     padding-bottom: 50px;
 }
+
+.ticker-logo {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin-right: 8px;
+    vertical-align: middle;
+}
