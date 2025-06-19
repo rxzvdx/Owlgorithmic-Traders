@@ -47,15 +47,10 @@ def main():
         with open(txt_path, newline='', encoding='utf-8') as file:
             reader = csv.DictReader(file, delimiter='\t')
             for row in reader:
-                prefix = row.get('Prefix', '').strip() or None
                 first = row.get('First', '').strip() or None
                 last = row.get('Last', '').strip() or None
                 suffix = row.get('Suffix', '').strip() or None
-                filing_type = row.get('FilingType', '').strip() or None
                 state_dst = row.get('StateDst', '').strip() or None
-                filing_year = int(row.get('Year', 0)) if row.get('Year') else None
-                filing_date = parse_date(row.get('FilingDate'))
-                doc_id = row.get('DocID', '').strip() or None
 
                 full_name = f"{first} {last}".strip()
 
@@ -63,16 +58,17 @@ def main():
                 if not full_name or not state_dst:
                     continue
 
+                # Check for existing representative
                 cursor.execute("""
-                    INSERT INTO representatives (
-                        name, state_district, prefix, first_name, last_name,
-                        suffix, filing_type, filing_year, filing_date, doc_id
-                    )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (
-                    full_name, state_dst, prefix, first, last,
-                    suffix, filing_type, filing_year, filing_date, doc_id
-                ))
+                    SELECT rep_id FROM representatives
+                    WHERE first_name=%s AND last_name=%s AND state_district=%s AND suffix=%s
+                """, (first, last, state_dst, suffix))
+                if cursor.fetchone() is None:
+                    cursor.execute("""
+                        INSERT INTO representatives (name, state_district, first_name, last_name, suffix)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (full_name, state_dst, first, last, suffix))
+                # else: already exists, skip
 
     connection.commit()
     cursor.close()
