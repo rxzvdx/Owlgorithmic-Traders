@@ -141,7 +141,7 @@ def chart_list():
         'AAPL', 'TSLA', 'GOOGL', 'AMZN', 'MSFT',
         'NASDAQ:IXIC', 'INDEX:SPX', 'INDEX:DJI'
     ]
-    return render_template('chart_list.html', stocks=stocks)
+    return render_template('chart_list.html', stocks=stocks, google=google)
 
 @app.route('/chart_view/<symbol>')
 def view_chart(symbol):
@@ -167,7 +167,7 @@ def view_chart(symbol):
 
     description = stock_info.get(display_symbol, "This chart shows real-time trading activity and price movement for the selected stock or index.")
 
-    return render_template('chart_view.html', symbol=display_symbol, description=description, overview=overview)
+    return render_template('chart_view.html', symbol=display_symbol, description=description, overview=overview, google=google)
 
 
 # Global stock information dictionary
@@ -274,10 +274,7 @@ def stock_api(symbol):
 
 @app.route('/contact')
 def contact():
-    return render_template('contact.html')
-    success, message = download_disclosures(year)
-    flash(message, 'success' if success else 'error')
-    return redirect(url_for('index'))
+    return render_template('contact.html', google=google)
 
 @app.route('/dashboard')
 def dashboard():
@@ -286,7 +283,7 @@ def dashboard():
 
     if not os.path.exists(base_path):
         print("❌ raw_data not found")
-        return render_template("dashboard.html", disclosures=[])
+        return render_template("dashboard.html", disclosures=[], google=google)
 
     for year_folder in os.listdir(base_path):
         year_path = os.path.join(base_path, year_folder)
@@ -318,7 +315,7 @@ def dashboard():
                     print(f"⚠️ Failed to parse XML: {file_path}")
                     continue
 
-    return render_template("dashboard.html", disclosures=disclosures)
+    return render_template("dashboard.html", disclosures=disclosures, google=google)
 
 @app.route('/api/disclosures')
 def disclosures_api():
@@ -383,6 +380,17 @@ def serve_disclosure(year_folder, filename):
     folder_path = os.path.join(os.path.dirname(__file__), 'raw_data', year_folder)
     return send_from_directory(folder_path, filename)
 
+@app.context_processor
+def inject_google():
+    return dict(google=google)
+
+# dummy user lookup function, will replace later
+class MockUser:
+    def __init__(self, email):
+        self.email = email
+        self.opt_in = True
+        self.first_name = "John"
+
 @app.route('/create_plan', methods=['POST'])
 def create_plan():
     if not google.authorized:
@@ -392,8 +400,8 @@ def create_plan():
     # placeholder for user info from db
     user = get_user_by_email(session.get('email'))
     
-    # personalized plan logic here 
-    # ...
+    # personalized plan logic here
+    # (e.g., fetch user preferences, generate a report, etc.)
     
     # notify user only if they are opted in
     if user.opt_in:
