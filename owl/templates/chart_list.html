@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}Disclosures Dashboard{% endblock %}
+
+{% block content %}
 <!--
   Author(s):
     Antonio Rosado
@@ -22,11 +27,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="dark-theme">
-    <!-- Top-right navigation: Back button to return to home/index -->
-    <div class="top-right-nav">
-        <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
-    </div>
-
     <!-- Main container for listing stock chart buttons -->
     <div class="chart-list-container">
         <h1 class="chart-heading">Top 50 Companies Stock Charts</h1>
@@ -61,3 +61,4 @@
     </div>
 </body>
 </html>
+{% endblock %}

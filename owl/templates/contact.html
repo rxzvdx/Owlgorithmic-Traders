@@ -1,3 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Disclosures Dashboard{% endblock %}
+
+{% block content %}
+
 <!--
   Author(s):
     Antonio Rosado
@@ -26,11 +32,6 @@
 </head>
 
 <body class="dark-theme">
-    <!-- Back button in the top-right corner for easy navigation -->
-    <div class="top-right-nav">
-        <a href="{{ url_for('index') }}" class="back-btn">← Back</a>
-    </div>
-
     <!-- Contact form container -->
     <div class="contact-container">
         <h2>Contact Us</h2>
@@ -92,3 +93,4 @@
     </script>
 </body>
 </html>
+{% endblock %}

@@ -412,5 +412,10 @@ def create_plan():
         )
     return redirect(url_for("dashboard"))
 
+@app.context_processor
+def inject_google():
+    import flask_dance.contrib.google
+    return dict(google=flask_dance.contrib.google.google)
+
 if __name__ == '__main__':
     app.run(debug=True)

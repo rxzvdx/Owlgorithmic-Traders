@@ -1,0 +1,46 @@
+<!--
+  Author(s):
+    Antonio Rosado
+    Kashan Khan
+    Imad Khan
+    Alexander Schifferle
+    Mike Kheang
+  Assignment:
+    Senior Project (Summer 2025) – “base.html”
+  Last Update:
+    Revised June 19, 2025
+  Purpose:
+    Template for styling sheets
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Owlgorithmic Traders{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="dark-theme">
+
+    {% include 'header.html' %}
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, msg in messages %}
+                        <li class="{{ category }}">{{ msg }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/stock-ticker.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}Disclosures Dashboard{% endblock %}
+
+{% block content %}
 <!--
   Author(s):
     Antonio Rosado
@@ -13,259 +18,242 @@
     Display the user dashboard with financial disclosures, filters, personalized plan opt-in, and interactive table.
 -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <!-- Page title shown in browser tab -->
-  <title>Disclosures Dashboard</title>
-  <!-- Main stylesheet for dark theme and layout -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body class="dark-theme">
+<div class="container">
+  <!-- Main heading for the dashboard -->
+  <h2 style="text-align:center; margin: 20px 0;">Financial Disclosure Filings</h2>
 
-  <!-- Top-right “Back” button to return to previous page -->
-  <div class="top-right-nav">
-    <a href="#" class="back-btn" onclick="history.back(); return false;">← Back</a>
+  <!-- Personalized Plan Opt-In Section -->
+  <div class="personalized-plan" style="text-align:center; margin-bottom: 20px;">
+    <form id="planForm" method="POST" action="{{ url_for('create_plan') }}">
+      <label style="font-size: 18px;">
+        <input type="checkbox" id="opt_in" name="opt_in" value="true">
+        I want personalized investment plans
+      </label>
+      <br><br>
+      <button class="btn" type="submit">Create My Personalized Plan</button>
+    </form>
   </div>
 
-  <div class="container">
-    <!-- Main heading for the dashboard -->
-    <h2 style="text-align:center; margin: 20px 0;">Financial Disclosure Filings</h2>
-
-    <!-- Personalized Plan Opt-In Section -->
-    <div class="personalized-plan" style="text-align:center; margin-bottom: 20px;">
-      <form id="planForm" method="POST" action="{{ url_for('create_plan') }}">
-        <label style="font-size: 18px;">
-          <input type="checkbox" id="opt_in" name="opt_in" value="true">
-          I want personalized investment plans
-        </label>
-        <br><br>
-        <button class="btn" type="submit">Create My Personalized Plan</button>
-      </form>
-    </div>
-
-    <!-- Validate that user checked the opt-in box before submitting -->
-    <script>
-      document.getElementById('planForm').addEventListener('submit', function (e) {
-        const optIn = document.getElementById('opt_in');
-        if (!optIn.checked) {
-          e.preventDefault(); 
-          alert("You must opt in to receive a personalized plan.");
-        }
-      });
-    </script>
-
-    <!-- Filters Row: name, state, transaction type, and year -->
-    <div class="filters-row">
-      <div class="filter-container">
-        <input type="text" id="nameFilter" placeholder="Filter by name..." autocomplete="off">
-        <div id="nameSuggestionBox" class="suggestion-box"></div>
-      </div>
-      <div class="filter-container">
-        <input type="text" id="stateFilter" placeholder="Filter by state..." autocomplete="off">
-        <div id="stateSuggestionBox" class="suggestion-box"></div>
-      </div>
-      <div class="filter-container">
-        <select id="transactionFilter">
-          <option value="">All Transaction Types</option>
-        </select>
-      </div>
-      <div class="filter-container">
-        <select id="yearFilter">
-          <option value="">All Years</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <!-- Disclosure Table: dynamic rows populated via JavaScript -->
-  <div class="container">
-    <div class="table-container" style="margin-top: 20px;">
-      <table id="disclosureTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>State</th>
-            <th>Transaction Type</th>
-            <th>Filing Date</th>
-            <th>Year</th>
-          </tr>
-        </thead>
-        <tbody id="disclosureBody">
-          <!-- JavaScript will inject <tr> rows here -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
+  <!-- Validate that user checked the opt-in box before submitting -->
   <script>
-    // Debounce helper to limit how often a function runs
-    function debounce(fn, delay) {
-      let timeoutId;
-      return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-      };
-    }
-
-    // Mapping codes to full transaction type labels
-    const typeMap = {
-      'C':'Current Filing','O':'Original Filing',
-      'W':'Withdrawn Filing','X':'Exempt Filing',
-      'P':'Periodic Filing','A':'Amendment Filing',
-      'D':'Deleted Filing','T':'Terminated Filing'
-    };
-    // Mapping state abbreviations to full names
-    const stateMap = {
-      'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas',
-      /* … all other states … */
-      'WY':'Wyoming','DC':'District of Columbia',
-      'AS':'American Samoa','AQ':'Antarctica'
-    };
-
-    let allData = [], uniqueNames = [], uniqueStates = [], uniqueTrans = [], uniqueYears = [];
-
-    /**
-     * Renders table rows based on filtered data array.
-     */
-    function renderRows(data) {
-      const body = document.getElementById('disclosureBody');
-      body.innerHTML = '';
-      if (!data.length) {
-        body.innerHTML = `<tr><td colspan="5">No data available.</td></tr>`;
-        return;
-      }
-      data.forEach(e => {
-        const rawType = e.transaction_type ?? e.type ?? '';
-        const displayType = typeMap[rawType] || rawType || 'Not Available';
-        const abbr = (e.state||'').slice(0,2).toUpperCase();
-        const displayState = stateMap[abbr] || abbr;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${e.name}</td>
-          <td>${displayState}</td>
-          <td>${displayType}</td>
-          <td>${e.date}</td>
-          <td>${e.year}</td>
-        `;
-        body.appendChild(tr);
-      });
-    }
-
-    /**
-     * Shows autocomplete suggestions under filter inputs.
-     */
-    function showSuggestions(list, boxId, inputId) {
-      const box = document.getElementById(boxId);
-      box.innerHTML = '';
-      if (!list.length) { box.style.display = 'none'; return; }
-      list.slice(0,5).forEach(val => {
-        const div = document.createElement('div');
-        div.textContent = val;
-        div.onclick = () => {
-          document.getElementById(inputId).value = val;
-          box.style.display = 'none';
-          applyFilters();
-        };
-        box.appendChild(div);
-      });
-      box.style.display = 'block';
-    }
-
-    /**
-     * Applies all active filters to the dataset and re-renders the table.
-     */
-    function applyFilters() {
-      const n = document.getElementById('nameFilter').value.toLowerCase();
-      const s = document.getElementById('stateFilter').value.toLowerCase();
-      const t = document.getElementById('transactionFilter').value;
-      const y = document.getElementById('yearFilter').value;
-      const filtered = allData.filter(e => {
-        const matchName = e.name.toLowerCase().includes(n);
-        const abbr = (e.state||'').slice(0,2).toUpperCase();
-        const matchState = (stateMap[abbr]||abbr).toLowerCase().includes(s);
-        const rawT = e.transaction_type ?? e.type ?? '';
-        const displayT = typeMap[rawT]||rawT||'';
-        const matchT = !t || displayT === t;
-        const matchY = !y || e.year === y;
-        return matchName && matchState && matchT && matchY;
-      });
-      renderRows(filtered);
-    }
-
-    // Hide suggestion boxes when clicking outside filter containers
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.filter-container')) {
-        document.getElementById('nameSuggestionBox').style.display = 'none';
-        document.getElementById('stateSuggestionBox').style.display = 'none';
+    document.getElementById('planForm').addEventListener('submit', function (e) {
+      const optIn = document.getElementById('opt_in');
+      if (!optIn.checked) {
+        e.preventDefault();
+        alert("You must opt in to receive a personalized plan.");
       }
     });
-
-    // Fetch disclosures data from API and initialize filters/table
-    fetch('/api/disclosures')
-      .then(r => r.json())
-      .then(data => {
-        allData = Array.isArray(data) ? data : [];
-        uniqueNames = [...new Set(allData.map(e => e.name))].sort();
-        uniqueStates = [...new Set(allData.map(e => {
-          const ab = (e.state||'').slice(0,2).toUpperCase();
-          return stateMap[ab] || ab;
-        }))].sort();
-        uniqueTrans = [...new Set(allData.map(e => {
-          const rt = e.transaction_type ?? e.type ?? '';
-          return typeMap[rt] || rt || '';
-        }))].filter(t => t.length > 1).sort();
-        uniqueYears = [...new Set(allData.map(e => e.year))].sort();
-
-        renderRows(allData);
-
-        // Populate transaction type dropdown
-        const txSel = document.getElementById('transactionFilter');
-        uniqueTrans.forEach(t => {
-          const o = document.createElement('option');
-          o.value = o.textContent = t;
-          txSel.appendChild(o);
-        });
-
-        // Populate year dropdown
-        const yrSel = document.getElementById('yearFilter');
-        uniqueYears.forEach(y => {
-          const o = document.createElement('option');
-          o.value = o.textContent = y;
-          yrSel.appendChild(o);
-        });
-
-        // Set up debounced event listeners for filters
-        const nameInput  = document.getElementById('nameFilter');
-        const stateInput = document.getElementById('stateFilter');
-        nameInput.addEventListener('input',
-          debounce(() => {
-            showSuggestions(
-              uniqueNames.filter(n => n.toLowerCase().includes(nameInput.value.toLowerCase())),
-              'nameSuggestionBox','nameFilter'
-            );
-            applyFilters();
-          }, 250)
-        );
-        stateInput.addEventListener('input',
-          debounce(() => {
-            showSuggestions(
-              uniqueStates.filter(s => s.toLowerCase().includes(stateInput.value.toLowerCase())),
-              'stateSuggestionBox','stateFilter'
-            );
-            applyFilters();
-          }, 250)
-        );
-        document.getElementById('transactionFilter')
-          .addEventListener('change', debounce(applyFilters, 100));
-        document.getElementById('yearFilter')
-          .addEventListener('change', debounce(applyFilters, 100));
-      })
-      .catch(() => {
-        document.getElementById('disclosureBody').innerHTML =
-          `<tr><td colspan="5">Failed to load data.</td></tr>`;
-      });
   </script>
-</body>
-</html>
+
+  <!-- Filters Row: name, state, transaction type, and year -->
+  <div class="filters-row">
+    <div class="filter-container">
+      <input type="text" id="nameFilter" placeholder="Filter by name..." autocomplete="off">
+      <div id="nameSuggestionBox" class="suggestion-box"></div>
+    </div>
+    <div class="filter-container">
+      <input type="text" id="stateFilter" placeholder="Filter by state..." autocomplete="off">
+      <div id="stateSuggestionBox" class="suggestion-box"></div>
+    </div>
+    <div class="filter-container">
+      <select id="transactionFilter">
+        <option value="">All Transaction Types</option>
+      </select>
+    </div>
+    <div class="filter-container">
+      <select id="yearFilter">
+        <option value="">All Years</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Disclosure Table: dynamic rows populated via JavaScript -->
+<div class="container">
+  <div class="table-container" style="margin-top: 20px;">
+    <table id="disclosureTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>State</th>
+          <th>Transaction Type</th>
+          <th>Filing Date</th>
+          <th>Year</th>
+        </tr>
+      </thead>
+      <tbody id="disclosureBody">
+        <!-- JavaScript will inject <tr> rows here -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // Debounce helper to limit how often a function runs
+  function debounce(fn, delay) {
+    let timeoutId;
+    return (...args) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn(...args), delay);
+    };
+  }
+
+  // Mapping codes to full transaction type labels
+  const typeMap = {
+    'C':'Current Filing','O':'Original Filing',
+    'W':'Withdrawn Filing','X':'Exempt Filing',
+    'P':'Periodic Filing','A':'Amendment Filing',
+    'D':'Deleted Filing','T':'Terminated Filing'
+  };
+  // Mapping state abbreviations to full names
+  const stateMap = {
+    'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas',
+    /* … all other states … */
+    'WY':'Wyoming','DC':'District of Columbia',
+    'AS':'American Samoa','AQ':'Antarctica'
+  };
+
+  let allData = [], uniqueNames = [], uniqueStates = [], uniqueTrans = [], uniqueYears = [];
+
+  /**
+   * Renders table rows based on filtered data array.
+   */
+  function renderRows(data) {
+    const body = document.getElementById('disclosureBody');
+    body.innerHTML = '';
+    if (!data.length) {
+      body.innerHTML = `<tr><td colspan="5">No data available.</td></tr>`;
+      return;
+    }
+    data.forEach(e => {
+      const rawType = e.transaction_type ?? e.type ?? '';
+      const displayType = typeMap[rawType] || rawType || 'Not Available';
+      const abbr = (e.state||'').slice(0,2).toUpperCase();
+      const displayState = stateMap[abbr] || abbr;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${e.name}</td>
+        <td>${displayState}</td>
+        <td>${displayType}</td>
+        <td>${e.date}</td>
+        <td>${e.year}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  /**
+   * Shows autocomplete suggestions under filter inputs.
+   */
+  function showSuggestions(list, boxId, inputId) {
+    const box = document.getElementById(boxId);
+    box.innerHTML = '';
+    if (!list.length) { box.style.display = 'none'; return; }
+    list.slice(0,5).forEach(val => {
+      const div = document.createElement('div');
+      div.textContent = val;
+      div.onclick = () => {
+        document.getElementById(inputId).value = val;
+        box.style.display = 'none';
+        applyFilters();
+      };
+      box.appendChild(div);
+    });
+    box.style.display = 'block';
+  }
+
+  /**
+   * Applies all active filters to the dataset and re-renders the table.
+   */
+  function applyFilters() {
+    const n = document.getElementById('nameFilter').value.toLowerCase();
+    const s = document.getElementById('stateFilter').value.toLowerCase();
+    const t = document.getElementById('transactionFilter').value;
+    const y = document.getElementById('yearFilter').value;
+    const filtered = allData.filter(e => {
+      const matchName = e.name.toLowerCase().includes(n);
+      const abbr = (e.state||'').slice(0,2).toUpperCase();
+      const matchState = (stateMap[abbr]||abbr).toLowerCase().includes(s);
+      const rawT = e.transaction_type ?? e.type ?? '';
+      const displayT = typeMap[rawT]||rawT||'';
+      const matchT = !t || displayT === t;
+      const matchY = !y || e.year === y;
+      return matchName && matchState && matchT && matchY;
+    });
+    renderRows(filtered);
+  }
+
+  // Hide suggestion boxes when clicking outside filter containers
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.filter-container')) {
+      document.getElementById('nameSuggestionBox').style.display = 'none';
+      document.getElementById('stateSuggestionBox').style.display = 'none';
+    }
+  });
+
+  // Fetch disclosures data from API and initialize filters/table
+  fetch('/api/disclosures')
+    .then(r => r.json())
+    .then(data => {
+      allData = Array.isArray(data) ? data : [];
+      uniqueNames = [...new Set(allData.map(e => e.name))].sort();
+      uniqueStates = [...new Set(allData.map(e => {
+        const ab = (e.state||'').slice(0,2).toUpperCase();
+        return stateMap[ab] || ab;
+      }))].sort();
+      uniqueTrans = [...new Set(allData.map(e => {
+        const rt = e.transaction_type ?? e.type ?? '';
+        return typeMap[rt] || rt || '';
+      }))].filter(t => t.length > 1).sort();
+      uniqueYears = [...new Set(allData.map(e => e.year))].sort();
+
+      renderRows(allData);
+
+      // Populate transaction type dropdown
+      const txSel = document.getElementById('transactionFilter');
+      uniqueTrans.forEach(t => {
+        const o = document.createElement('option');
+        o.value = o.textContent = t;
+        txSel.appendChild(o);
+      });
+
+      // Populate year dropdown
+      const yrSel = document.getElementById('yearFilter');
+      uniqueYears.forEach(y => {
+        const o = document.createElement('option');
+        o.value = o.textContent = y;
+        yrSel.appendChild(o);
+      });
+
+      // Set up debounced event listeners for filters
+      const nameInput  = document.getElementById('nameFilter');
+      const stateInput = document.getElementById('stateFilter');
+      nameInput.addEventListener('input',
+        debounce(() => {
+          showSuggestions(
+            uniqueNames.filter(n => n.toLowerCase().includes(nameInput.value.toLowerCase())),
+            'nameSuggestionBox','nameFilter'
+          );
+          applyFilters();
+        }, 250)
+      );
+      stateInput.addEventListener('input',
+        debounce(() => {
+          showSuggestions(
+            uniqueStates.filter(s => s.toLowerCase().includes(stateInput.value.toLowerCase())),
+            'stateSuggestionBox','stateFilter'
+          );
+          applyFilters();
+        }, 250)
+      );
+      document.getElementById('transactionFilter')
+        .addEventListener('change', debounce(applyFilters, 100));
+      document.getElementById('yearFilter')
+        .addEventListener('change', debounce(applyFilters, 100));
+    })
+    .catch(() => {
+      document.getElementById('disclosureBody').innerHTML =
+        `<tr><td colspan="5">Failed to load data.</td></tr>`;
+    });
+</script>
+{% endblock %}
