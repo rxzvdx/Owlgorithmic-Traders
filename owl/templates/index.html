@@ -21,6 +21,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
+{% if google.authorized %}
+<div class="logout-container">
+    <a class="btn logout" href="{{ url_for('logout') }}">Log Out</a>
+</div>
+{% endif %}
+
 <body class="dark-theme">
 
     <!-- HEADER + NAV -->
@@ -68,12 +75,14 @@
     <div class="container">
         {% if google.authorized %}
             <p class="user-info">Logged in as: <strong>{{ user_email }}</strong></p>
-            <a class="btn logout" href="{{ url_for('logout') }}">Log Out</a>
 
             <h2 class="title">Select a Year</h2>
             <form method="POST" action="{{ url_for('download') }}" class="year-form">
                 {% for y in ['2021', '2022', '2023', '2024', '2025'] %}
-                    <button class="btn year" type="submit" name="year" value="{{ y }}">{{ y }}</button>
+                    <button class="btn year" type="submit" name="year" value="{{ y }}">
+                        <span class="year-label">{{ y }}</span>
+                        <span class="year-desc">SEC Disclosures from {{ y }}<br>Source: https://disclosures-clerk.house.gov/</span>
+                    </button>
                 {% endfor %}
             </form>
 
