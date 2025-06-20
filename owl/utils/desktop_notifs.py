@@ -16,7 +16,6 @@ Purpose:
 
 from plyer import notification  # desktop notification library
 
-
 def notify_user(title: str, message: str) -> None:
     """
     Send a desktop notification with a given title and message.
@@ -34,3 +33,48 @@ def notify_user(title: str, message: str) -> None:
         message=message,     # Main content of the notification
         timeout=10           # Display duration in seconds before auto-dismissal
     )
+
+
+# CODE FOR OTHER PLATFORMS
+# from plyer import notification
+
+# notification.notify(
+#     title='Owlgorithmic Alert',
+#     message='Stock prices updated successfully!',
+#     app_name='Owlgorithmic',
+#     timeout=5  # seconds
+# )
+
+# import platform
+# import subprocess
+
+# def notify_user(title: str, message: str) -> None:
+#     """
+#     Send a desktop notification with a given title and message.
+
+#     Args:
+#         title (str): The notification title displayed in the system tray.
+#         message (str): The notification body text shown to the user.
+#     """
+#     system = platform.system()
+
+#     if system == "Darwin":  # macOS
+#         subprocess.run([
+#             "osascript", "-e",
+#             f'display notification "{message}" with title "{title}"'
+#         ])
+#     elif system == "Linux":
+#         # Requires notify-send to be installed (common on most Linux distros)
+#         subprocess.run(["notify-send", title, message])
+#     elif system == "Windows":
+#         try:
+#             from plyer import notification
+#             notification.notify(
+#                 title=title,
+#                 message=message,
+#                 timeout=10
+#             )
+#         except Exception as e:
+#             print(f"[WARN] Notification failed on Windows: {e}")
+#     else:
+#         print(f"[INFO] Notification: {title} - {message}")
