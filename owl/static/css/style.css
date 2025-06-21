@@ -442,6 +442,34 @@ nav ul li a:hover::after {
     text-decoration: none;
 }
 
+.favorite-form {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.favorite-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.favorite-btn:hover #starIcon,
+.favorite-btn.active #starIcon {
+    color: #ffd700;
+}
+
+#starIcon {
+    font-size: 18px;
+    margin-right: 6px;
+    transition: color 0.3s;
+}
+
+.favorite-btn:hover #starIcon {
+    color: #ffd700;
+}
 /* ---------- Contact Page ---------- */
 .contact-container {
     max-width: 600px;

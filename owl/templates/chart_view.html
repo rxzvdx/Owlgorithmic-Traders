@@ -2,33 +2,28 @@
 {% block title %}Disclosures Dashboard{% endblock %}
 {% block content %}
 
-<!--
-  Author(s):
-    Antonio Rosado
-    Kashan Khan
-    Imad Khan
-    Alexander Schifferle
-    Mike Kheang
-  Assignment:
-    Senior Project (Summer 2025) – “chart_view.html”
-  Last Update:
-    Revised June 19, 2025
-  Purpose:
-    Render a live TradingView chart for the selected stock along with company overview details.
--->
-
 <div class="chart-view-container">
-    <!-- Navigation back to list of all stocks -->
     <a href="{{ url_for('chart_list') }}" class="back-link">← Back to Stock List</a>
-
-    <!-- Heading showing the current symbol -->
+    <a href="{{ url_for('favorites') }}" class="btn secondary">View My Favorites</a>
     <h2>{{ symbol }} Live Stock Chart</h2>
     <p class="chart-description">{{ description }}</p>
 </div>
 
-<!-- Split layout section -->
 <div class="chart-split-layout">
     <div class="company-overview">
+
+        <!-- Favorites Button -->
+        <form method="POST" action="{{ url_for('toggle_favorite') }}" class="favorite-form">
+            <input type="hidden" name="symbol" value="{{ symbol }}">
+            <button type="submit" class="favorite-btn" id="favoriteBtn">
+                {% if symbol in session.get('favorites', []) %}
+                    <span id="starIcon" style="color: gold;">★</span> Remove from Favorites
+                {% else %}
+                    <span id="starIcon" style="color: #ccc;">☆</span> Add to Favorites
+                {% endif %}
+            </button>
+        </form>
+
         <h3>Company Overview</h3>
         <ul>
             <li><strong>Name:</strong> {{ overview.name }}</li>
@@ -39,7 +34,9 @@
             <li><strong>Dividend Yield:</strong> {{ overview.dividendYield }}</li>
             <li><strong>52-Week High:</strong> {{ overview['52WeekHigh'] }}</li>
             <li><strong>52-Week Low:</strong> {{ overview['52WeekLow'] }}</li>
-            <li><strong>Website:</strong> <a href="{{ overview.website }}" target="_blank">{{ overview.website }}</a></li>
+            <li><strong>Website:</strong> 
+                <a href="{{ overview.website }}" target="_blank">{{ overview.website }}</a>
+            </li>
         </ul>
     </div>
 
