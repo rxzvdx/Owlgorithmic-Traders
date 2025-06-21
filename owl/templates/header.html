@@ -25,6 +25,7 @@
                 <li><a href="{{ url_for('chart_list') }}">View Live Charts</a></li>
                 {% if google.authorized %}
                 <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('favorites') }}">View My Favorites</a></li>
                 {% endif %}
             </ul>
         </nav>

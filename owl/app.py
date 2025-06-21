@@ -169,7 +169,34 @@ def view_chart(symbol):
 
     return render_template('chart_view.html', symbol=display_symbol, description=description, overview=overview, google=google)
 
+@app.route('/add_favorite', methods=['POST'])
+def add_favorite():
+    symbol = request.form.get('symbol')
+    if 'favorites' not in session:
+        session['favorites'] = []
+    if symbol and symbol not in session['favorites']:
+        session['favorites'].append(symbol)
+        session.modified = True
+    return redirect(url_for('view_chart', symbol=symbol))
 
+@app.route('/favorites')
+def favorites():
+    favorites_list = session.get('favorites', [])
+    return render_template('favorites.html', favorites=favorites_list)
+
+@app.route('/toggle_favorite', methods=['POST'])
+def toggle_favorite():
+    symbol = request.form.get('symbol')
+    if 'favorites' not in session:
+        session['favorites'] = []
+
+    if symbol in session['favorites']:
+        session['favorites'].remove(symbol)
+    else:
+        session['favorites'].append(symbol)
+
+    session.modified = True
+    return redirect(url_for('view_chart', symbol=symbol))
 # Global stock information dictionary
 stock_info = {
     'AAPL': 'Apple Inc. is a technology company known for the iPhone, Mac, and innovative hardware and software.',
