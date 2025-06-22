@@ -11,7 +11,7 @@
     Alexander Schifferle
     Mike Kheang
   Assignment:
-    Senior Project (Summer 2025) – “dashboard.html”
+    Senior Project (Summer 2025) – "dashboard.html"
   Last Update:
     Revised June 19, 2025
   Purpose:
@@ -132,7 +132,7 @@
       const displayState = stateMap[abbr] || abbr;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${e.name}</td>
+        <td><a href="/politician/${encodeURIComponent(e.name)}" class="politician-link">${e.name}</a></td>
         <td>${displayState}</td>
         <td>${displayType}</td>
         <td>${e.date}</td>

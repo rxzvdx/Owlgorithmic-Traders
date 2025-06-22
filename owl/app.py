@@ -311,6 +311,184 @@ def stock_api(symbol):
 def contact():
     return render_template('contact.html', google=google)
 
+def get_stock_company_name(ticker):
+    """Get company name from stock ticker using the stock_info dictionary"""
+    return stock_info.get(ticker.upper(), f"{ticker.upper()} Corporation")
+
+# ------ REP/ PROFILE ROUTE -----
+@app.route('/politician/<name>')
+def politician_profile(name):
+    # Decode the URL-encoded name
+    politician_name = name.replace('+', ' ')
+    print(f"🔍 Looking for politician: {politician_name}")
+    
+    # Initialize data structures
+    filings = []
+    transactions = []
+    stock_holdings = {}
+    
+    # Process data from all years
+    base_path = os.path.join(os.path.dirname(__file__), 'raw_data')
+    
+    if not os.path.exists(base_path):
+        print("raw_data directory not found")
+        return render_template("politician_profile.html", 
+                             politician={'name': politician_name, 'state_district': 'N/A'},
+                             stats={'total_filings': 0, 'years_active': 0, 'total_transactions': 0, 'unique_stocks': 0},
+                             filings=[], transactions=[], stock_holdings=[], google=google)
+    
+    # Process .txt files for filing information
+    for year_folder in os.listdir(base_path):
+        year_path = os.path.join(base_path, year_folder)
+        if not os.path.isdir(year_path):
+            continue
+            
+        year = year_folder.replace('_data', '')
+        print(f"Processing year: {year}")
+        
+        # Look for .txt files first
+        txt_files = [f for f in os.listdir(year_path) if f.endswith('.txt')]
+        for txt_file in txt_files:
+            txt_path = os.path.join(year_path, txt_file)
+            try:
+                with open(txt_path, 'r', encoding='utf-8') as f:
+                    for line_num, line in enumerate(f, 1):
+                        parts = line.strip().split('\t')
+                        if len(parts) >= 9:  # Need at least 9 columns
+                            # Check if this line matches our politician
+                            first = parts[2] if len(parts) > 2 else ''  # Column 2 is First name
+                            last = parts[1] if len(parts) > 1 else ''   # Column 1 is Last name
+                            current_name = f"{first} {last}".strip()
+                            
+                            # More flexible name matching
+                            if (current_name.lower() == politician_name.lower() or 
+                                politician_name.lower() in current_name.lower() or
+                                current_name.lower() in politician_name.lower()):
+                                print(f"Found match: {current_name} in {txt_file}")
+                                filings.append({
+                                    'year': parts[6] if len(parts) > 6 else year,  # Column 6 is Year
+                                    'filing_type': parts[4] if len(parts) > 4 else 'N/A',  # Column 4 is FilingType
+                                    'date': parts[7] if len(parts) > 7 else 'N/A',  # Column 7 is FilingDate
+                                    'doc_id': parts[8] if len(parts) > 8 else 'N/A',  # Column 8 is DocID
+                                    'state_district': parts[5] if len(parts) > 5 else 'N/A'  # Column 5 is StateDst
+                                })
+            except Exception as e:
+                print(f"Error processing {txt_path}: {e}")
+                continue
+    
+    print(f"Found {len(filings)} filings")
+    
+    # Process .xml files for transaction details
+    for year_folder in os.listdir(base_path):
+        year_path = os.path.join(base_path, year_folder)
+        if not os.path.isdir(year_path):
+            continue
+            
+        xml_files = [f for f in os.listdir(year_path) if f.endswith('.xml')]
+        for xml_file in xml_files:
+            xml_path = os.path.join(year_path, xml_file)
+            try:
+                tree = ET.parse(xml_path)
+                root = tree.getroot()
+                
+                # Check if this XML file contains data for our politician
+                member_elements = root.findall('Member')
+                for member in member_elements:
+                    first = member.findtext('First', default='')
+                    last = member.findtext('Last', default='')
+                    current_name = f"{first} {last}".strip()
+                    
+                    # More flexible name matching
+                    if (current_name.lower() == politician_name.lower() or 
+                        politician_name.lower() in current_name.lower() or
+                        current_name.lower() in politician_name.lower()):
+                        print(f"Found XML match: {current_name} in {xml_file}")
+                        # Get transaction information
+                        txn_info = root.find("TransactionInformation")
+                        if txn_info is not None:
+                            for txn in txn_info.findall("Transaction"):
+                                ticker = txn.findtext('Ticker', default='N/A')
+                                transaction_data = {
+                                    'date': txn.findtext('TransactionDate', default='N/A'),
+                                    'ticker': ticker,
+                                    'type': txn.findtext('Type', default='N/A'),
+                                    'owner': txn.findtext('Owner', default='N/A'),
+                                    'amount': txn.findtext('Amount', default='N/A'),
+                                    'description': txn.findtext('AssetDescription', default='N/A')
+                                }
+                                transactions.append(transaction_data)
+                                
+                                # Track stock holdings
+                                if ticker != 'N/A':
+                                    if ticker not in stock_holdings:
+                                        stock_holdings[ticker] = {
+                                            'count': 0,
+                                            'last_date': transaction_data['date'],
+                                            'company_name': get_stock_company_name(ticker)
+                                        }
+                                    stock_holdings[ticker]['count'] += 1
+                                    if transaction_data['date'] > stock_holdings[ticker]['last_date']:
+                                        stock_holdings[ticker]['last_date'] = transaction_data['date']
+                                        
+            except ET.ParseError:
+                print(f"Failed to parse XML: {xml_path}")
+                continue
+            except Exception as e:
+                print(f"Error processing {xml_path}: {e}")
+                continue
+    
+    print(f"Found {len(transactions)} transactions")
+    print(f"Found {len(stock_holdings)} unique stocks")
+    
+    # Calculate statistics
+    years_active = len(set(filing['year'] for filing in filings))
+    unique_stocks = len(stock_holdings)
+    
+    # Convert stock_holdings dict to list for template
+    stock_holdings_list = [
+        {
+            'ticker': ticker,
+            'company_name': data['company_name'],
+            'count': data['count'],
+            'last_date': data['last_date']
+        }
+        for ticker, data in stock_holdings.items()
+    ]
+    
+    # Sort by transaction count
+    stock_holdings_list.sort(key=lambda x: x['count'], reverse=True)
+    
+    # Get state/district from first filing
+    state_district = 'N/A'
+    if filings:
+        # Get state/district from the first filing that has it
+        for filing in filings:
+            if filing.get('state_district') and filing['state_district'] != 'N/A':
+                state_district = filing['state_district']
+                break
+    
+    stats = {
+        'total_filings': len(filings),
+        'years_active': years_active,
+        'total_transactions': len(transactions),
+        'unique_stocks': unique_stocks
+    }
+    
+    politician = {
+        'name': politician_name,
+        'state_district': state_district
+    }
+    
+    print(f"Final stats: {stats}")
+    
+    return render_template("politician_profile.html", 
+                         politician=politician,
+                         stats=stats,
+                         filings=filings,
+                         transactions=transactions,
+                         stock_holdings=stock_holdings_list,
+                         google=google)
+
 # ------ DASHBOARD ROUTE -----
 
 @app.route('/dashboard')

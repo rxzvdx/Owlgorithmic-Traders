@@ -701,3 +701,105 @@ body {
     margin-right: 8px;
     vertical-align: middle;
 }
+
+/* ---------- Dashboard Styles ---------- */
+.politician-link {
+    color: #00ff88;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.politician-link:hover {
+    color: #00cc70;
+    text-decoration: underline;
+}
+
+/* ---------- Politician Profile Styles ---------- */
+.profile-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    padding: 40px 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+    border: 1px solid #333;
+}
+
+.profile-name {
+    font-size: 2.5rem;
+    color: #00ff88;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.profile-location {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #1c1c1c;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    color: #00ff88;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.profile-section {
+    background: #1c1c1c;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #333;
+}
+
+.profile-section h3 {
+    color: #00ff88;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.transaction-item {
+    background: #252525;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border-left: 4px solid #00ff88;
+}
+
+.transaction-date {
+    color: #00ff88;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.transaction-details {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.transaction-amount {
+    color: #ff6b6b;
+    font-weight: bold;
+    margin-top: 5px;
+}
