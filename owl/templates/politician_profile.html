@@ -22,9 +22,23 @@
 <div class="container">
   <!-- Profile Header -->
   <div class="profile-header">
-    <h1 class="profile-name">{{ politician.name }}</h1>
-    <p class="profile-location">{{ politician.state_district }}</p>
-  </div>
+  <h1 class="profile-name">{{ politician.name }}</h1>
+
+  <!-- Favorite Toggle Button, Centered -->
+  <form method="POST" action="{{ url_for('toggle_rep_favorite') }}" class="favorite-form">
+    <input type="hidden" name="rep_name" value="{{ politician.name }}">
+    <button type="submit" class="favorite-btn" id="repFavoriteBtn">
+      {% if politician.name in session.get('favorite_reps', []) %}
+        <span id="starIcon" style="color: gold;">★</span> Remove from Favorites
+      {% else %}
+        <span id="starIcon" style="color: #ccc;">☆</span> Add to Favorites
+      {% endif %}
+    </button>
+  </form>
+
+  <p class="profile-location">{{ politician.state_district }}</p>
+</div>
+
 
   <!-- Statistics Cards -->
   <div class="profile-stats">

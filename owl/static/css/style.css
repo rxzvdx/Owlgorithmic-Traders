@@ -470,6 +470,39 @@ nav ul li a:hover::after {
 .favorite-btn:hover #starIcon {
     color: #ffd700;
 }
+
+.tabs-container {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.tab-button {
+    background-color: #1e1e1e;
+    color: #ccc;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tab-button.active,
+.tab-button:hover {
+    background-color: #00ff88;
+    color: #121212;
+}
+
+.tab-content {
+    display: none;
+    margin-top: 20px;
+}
+
+.tab-content.active-tab {
+    display: block;
+}
+
 /* ---------- Contact Page ---------- */
 .contact-container {
     max-width: 600px;
@@ -802,4 +835,36 @@ body {
     color: #ff6b6b;
     font-weight: bold;
     margin-top: 5px;
+}
+
+.favorite-form {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 20px;
+}
+
+.favorite-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.3s;
+    font-weight: 500;
+}
+
+.favorite-btn:hover {
+    color: #ffd700;
+    transform: scale(1.05);
+}
+
+#starIcon {
+    font-size: 1.4rem;
+    margin-right: 6px;
+    vertical-align: middle;
+    transition: color 0.3s;
+}
+
+.favorite-btn:hover #starIcon {
+    color: #ffd700;
 }

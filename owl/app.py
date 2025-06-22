@@ -188,7 +188,8 @@ def add_favorite():
 @app.route('/favorites')
 def favorites():
     favorites_list = session.get('favorites', [])
-    return render_template('favorites.html', favorites=favorites_list)
+    reps_list = session.get('favorite_reps', [])  # Add this
+    return render_template('favorites.html', favorites=favorites_list, favorite_reps=reps_list)
 
 @app.route('/toggle_favorite', methods=['POST'])
 def toggle_favorite():
@@ -203,6 +204,20 @@ def toggle_favorite():
 
     session.modified = True
     return redirect(url_for('view_chart', symbol=symbol))
+
+@app.route('/toggle_rep_favorite', methods=['POST'])
+def toggle_rep_favorite():
+    rep_name = request.form.get('rep_name')
+    if 'favorite_reps' not in session:
+        session['favorite_reps'] = []
+
+    if rep_name in session['favorite_reps']:
+        session['favorite_reps'].remove(rep_name)
+    else:
+        session['favorite_reps'].append(rep_name)
+
+    session.modified = True
+    return redirect(request.referrer or url_for('favorites'))
 
 # ------ STOCK CHART ROUTE -----
 # Global stock information dictionary
