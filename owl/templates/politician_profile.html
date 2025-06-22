@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ politician.name }} - Profile{% endblock %}
+
+{% block content %}
+<!--
+  Author(s):
+    Antonio Rosado
+    Kashan Khan
+    Imad Khan
+    Alexander Schifferle
+    Mike Kheang
+  Assignment:
+    Senior Project (Summer 2025) – "politician_profile.html"
+  Last Update:
+    Revised June 19, 2025
+  Purpose:
+    Display detailed profile information for a specific politician including
+    their filing history, transaction details, and statistics.
+-->
+
+<div class="container">
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <h1 class="profile-name">{{ politician.name }}</h1>
+    <p class="profile-location">{{ politician.state_district }}</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="profile-stats">
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.total_filings }}</div>
+      <div class="stat-label">Total Filings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.years_active }}</div>
+      <div class="stat-label">Years Active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.total_transactions }}</div>
+      <div class="stat-label">Total Transactions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.unique_stocks }}</div>
+      <div class="stat-label">Unique Stocks</div>
+    </div>
+  </div>
+
+  <!-- Filing History Section -->
+  <div class="profile-section">
+    <h3>Filing History</h3>
+    <div class="table-container">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Year</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Filing Type</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Date</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Document ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for filing in filings %}
+          <tr>
+            <td style="padding: 6px 8px;">{{ filing.year }}</td>
+            <td style="padding: 6px 8px;">{{ filing.filing_type }}</td>
+            <td style="padding: 6px 8px;">{{ filing.date }}</td>
+            <td style="padding: 6px 8px;">{{ filing.doc_id }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Transactions Section -->
+  <div class="profile-section">
+    <h3>Recent Transactions</h3>
+    {% if transactions %}
+      {% for transaction in transactions[:10] %}
+      <div class="transaction-item">
+        <div class="transaction-date">{{ transaction.date }}</div>
+        <div class="transaction-details">
+          <strong>Stock:</strong> {{ transaction.ticker }} | 
+          <strong>Type:</strong> {{ transaction.type }} | 
+          <strong>Owner:</strong> {{ transaction.owner }}
+        </div>
+        {% if transaction.amount %}
+        <div class="transaction-amount">Amount: {{ transaction.amount }}</div>
+        {% endif %}
+        {% if transaction.description %}
+        <div class="transaction-details">{{ transaction.description }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color: #ccc;">No transaction details available.</p>
+    {% endif %}
+  </div>
+
+  <!-- Stock Holdings Summary -->
+  {% if stock_holdings %}
+  <div class="profile-section">
+    <h3>Stock Holdings Summary</h3>
+    <div class="table-container">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Stock Symbol</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Company Name</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Transaction Count</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Last Transaction</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stock in stock_holdings %}
+          <tr>
+            <td style="padding: 6px 8px;">
+              <a href="/chart_view/{{ stock.ticker }}" class="politician-link">{{ stock.ticker }}</a>
+            </td>
+            <td style="padding: 6px 8px;">{{ stock.company_name }}</td>
+            <td style="padding: 6px 8px;">{{ stock.count }}</td>
+            <td style="padding: 6px 8px;">{{ stock.last_date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  // Add any interactive features here if needed
+  document.addEventListener('DOMContentLoaded', function() {
+    // You can add JavaScript for additional interactivity
+    console.log('Politician profile loaded for: {{ politician.name }}');
+  });
+</script>
+{% endblock %} 
