@@ -38,9 +38,10 @@ from flask_dance.consumer import oauth_authorized
 #OAuth imports
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 
-# Parsing logic
+# Parsing ROUTE
 from flask import Flask, render_template, jsonify
 import json 
+from flask import send_from_directory
 
 # Desktop notification
 from utils.desktop_notifs import notify_user # type: ignore
@@ -56,6 +57,7 @@ app.secret_key = "supersecretkey"
 # Register the Google OAuth blueprint under url_prefix
 app.register_blueprint(google_blueprint, url_prefix="/login")
 
+# ------ MAIN LANDING PAGE ROUTE -----
 # Home page route
 @app.route('/')
 def index():
@@ -71,6 +73,7 @@ def index():
             return redirect(url_for("google.login"))
     return render_template('index.html', user_email=user_email, google=google)
 
+# ------ OAUTH ROUTE -----
 # Login route intiates the Google OAuth process
 @app.route('/auth')
 def login():
@@ -102,6 +105,7 @@ def google_logged_in(blueprint, token):
 
     return True
 
+# ------ LOGOUT ROUTE -----
 # Logout route clears the session and redirects to the login page
 @app.route('/logout')
 def logout():
@@ -109,6 +113,7 @@ def logout():
     flash("You have been logged out.", "success")
     return redirect(url_for('index'))
 
+# ------ DOWNLOAD ROUTE -----
 # Download routes will only work if the user is logged in
 @app.route('/download', methods=['POST'])
 def download():
@@ -134,7 +139,7 @@ def download():
         flash(f"Download failed: {str(e)}", 'error')
         return redirect(url_for('index'))
 
-
+# ------ STOCK CHART VIEW ROUTE -----
 @app.route('/chart_view')
 def chart_list():
     stocks = [
@@ -169,6 +174,7 @@ def view_chart(symbol):
 
     return render_template('chart_view.html', symbol=display_symbol, description=description, overview=overview, google=google)
 
+# ------ FAVORITES ROUTE -----
 @app.route('/add_favorite', methods=['POST'])
 def add_favorite():
     symbol = request.form.get('symbol')
@@ -197,6 +203,8 @@ def toggle_favorite():
 
     session.modified = True
     return redirect(url_for('view_chart', symbol=symbol))
+
+# ------ STOCK CHART ROUTE -----
 # Global stock information dictionary
 stock_info = {
     'AAPL': 'Apple Inc. is a technology company known for the iPhone, Mac, and innovative hardware and software.',
@@ -298,10 +306,12 @@ def stock_api(symbol):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
+# ------ CONTACT PAGE ROUTE -----
 @app.route('/contact')
 def contact():
     return render_template('contact.html', google=google)
+
+# ------ DASHBOARD ROUTE -----
 
 @app.route('/dashboard')
 def dashboard():
@@ -309,7 +319,7 @@ def dashboard():
     disclosures = []
 
     if not os.path.exists(base_path):
-        print("❌ raw_data not found")
+        print("raw_data not found")
         return render_template("dashboard.html", disclosures=[], google=google)
 
     for year_folder in os.listdir(base_path):
@@ -339,7 +349,7 @@ def dashboard():
                             'amount': txn.findtext('Amount', default='N/A')
                         })
                 except ET.ParseError:
-                    print(f"⚠️ Failed to parse XML: {file_path}")
+                    print(f"Failed to parse XML: {file_path}")
                     continue
 
     return render_template("dashboard.html", disclosures=disclosures, google=google)
@@ -386,6 +396,7 @@ def disclosures_api():
     return jsonify(data)
 
 
+# ------ DISCLOSURE PROCESSING ROUTE -----
 @app.route('/disclosures')
 def disclosures_page():
     user_email = None
@@ -407,16 +418,22 @@ def serve_disclosure(year_folder, filename):
     folder_path = os.path.join(os.path.dirname(__file__), 'raw_data', year_folder)
     return send_from_directory(folder_path, filename)
 
+# ------ PROPER FLASK FLOW -----
 @app.context_processor
 def inject_google():
     return dict(google=google)
 
+# ------ DESKTOP NOTIFICATION ROUTE -----
 # dummy user lookup function, will replace later
 class MockUser:
     def __init__(self, email):
         self.email = email
         self.opt_in = True
         self.first_name = "John"
+
+def get_user_by_email(email):
+    # in prod, will fetch from db
+    return MockUser(email or "default@example.com")
 
 @app.route('/create_plan', methods=['POST'])
 def create_plan():
@@ -425,7 +442,7 @@ def create_plan():
         return redirect(url_for("index"))
     
     # placeholder for user info from db
-    user = get_user_by_email(session.get('email'))
+    user = get_user_by_email(session.get('email')) # type: ignore
     
     # personalized plan logic here
     # (e.g., fetch user preferences, generate a report, etc.)
@@ -439,5 +456,6 @@ def create_plan():
     flash("Your plan was created successfully.", "success")
     return redirect(url_for("dashboard"))
 
+# ------ MAIN -----
 if __name__ == '__main__':
     app.run(debug=True)
