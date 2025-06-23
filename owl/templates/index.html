@@ -6,7 +6,7 @@
     Alexander Schifferle
     Mike Kheang
   Assignment:
-    Senior Project (Summer 2025) – “index.html”
+    Senior Project (Summer 2025) – "index.html"
   Last Update:
     Revised June 23, 2025
   Purpose:
@@ -16,6 +16,22 @@
 {% extends "base.html" %}
 {% block title %}Owlgorithmic Traders{% endblock %}
 {% block content %}
+
+<!-- HERO SECTION -->
+<div class="header-content">
+    <h2 class="motto">
+        Automate. Analyze. Outperform.
+    </h2>
+    <h1 class="hero-title">Welcome to <span>Owlgorithmic Traders</span></h1>
+    <p class="hero-subtext">Your real-time automated edge in the stock market</p>
+
+    {% if not google.authorized %}
+    <div class="auth-buttons hero-buttons">
+        <a class="btn primary" href="{{ url_for('login') }}">Log in with Google</a>
+        <a class="btn secondary" href="{{ url_for('login') }}">Sign up with Google</a>
+    </div>
+    {% endif %}
+</div>
 
 <!-- AUTHENTICATED USER VIEW -->
 <div class="container">
