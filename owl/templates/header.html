@@ -8,11 +8,10 @@
   Assignment:
     Senior Project (Summer 2025) – “header.html”
   Last Update:
-    Revised June 22, 2025
+    Revised June 23, 2025
   Purpose:
-    Template for navigation bar + stock ticker
+    Display a contact form for users to submit inquiries, which posts entries to a Google Sheets backend.
 -->
-
 <div id="header">
   <div class="container">
     <nav>
@@ -23,27 +22,17 @@
       >
       <ul>
         <li>
-          <a href="{{ url_for('index') }}#header">Home</a>
+          <button id="theme-toggle" aria-label="Toggle theme">🌓</button>
         </li>
-        <li>
-          <a href="{{ url_for('index') }}#about">About</a>
-        </li>
-        <li>
-          <a href="{{ url_for('index') }}#services">Services</a>
-        </li>
-        <li>
-          <a href="{{ url_for('contact') }}">Contact</a>
-        </li>
-        <li>
-          <a href="{{ url_for('chart_list') }}">View Live Charts</a>
-        </li>
-        {% if google.authorized %}
-          <li>
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-          </li>
-          <li>
-            <a href="{{ url_for('favorites') }}">View My Favorites</a>
-          </li>
+        <li><a href="{{ url_for('index') }}#header">Home</a></li>
+        <li><a href="{{ url_for('index') }}#about">About</a></li>
+        <li><a href="{{ url_for('index') }}#services">Services</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        <li><a href="{{ url_for('chart_list') }}">View Live Charts</a></li>
+
+        {% if google and google.authorized %}
+          <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+          <li><a href="{{ url_for('favorites') }}">View My Favorites</a></li>
         {% endif %}
       </ul>
     </nav>
