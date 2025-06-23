@@ -11,44 +11,40 @@
 # Purpose: 
 #    This script initializes the Flask app.
 
+# ─── Standard Library Imports ────────────────────────────────────────────
 import os
-import yfinance as yf
-import json
-from flask import render_template, url_for
-
-import pandas as pd
 import glob
+import json
+from datetime import datetime, timedelta
+from functools import lru_cache
 import xml.etree.ElementTree as ET
 
-from flask import jsonify
+# ─── Environment Configuration ───────────────────────────────────────────
+# Allow HTTP for local testing of OAuth
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for local testing
+# ─── Third-Party Package Imports ─────────────────────────────────────────
+import yfinance as yf
+import pandas as pd
 
-# Flask framework imports
-from flask import session, Flask, render_template, request, redirect, url_for, flash, current_app, after_this_request, send_file
+# ─── Flask Framework Imports ─────────────────────────────────────────────
+from flask import (
+    Flask, render_template, request, redirect, url_for,
+    session, flash, jsonify, send_file, send_from_directory,
+    current_app, after_this_request
+)
 
-# Custom Utilities
-from utils.downloader import download_and_extract_disclosures
-from utils.login import google_blueprint
-
-# Flask-Dance imports
+# ─── Flask-Dance (Google OAuth) Imports ──────────────────────────────────
 from flask_dance.contrib.google import google
 from flask_dance.consumer import oauth_authorized
 
-#OAuth imports
+# ─── OAuth Library Imports ───────────────────────────────────────────────
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 
-# Parsing ROUTE
-from flask import Flask, render_template, jsonify
-import json 
-from flask import send_from_directory
-
-# Desktop notification
-from utils.desktop_notifs import notify_user # type: ignore
-
-# Add this near the top of the file with other imports
-from functools import lru_cache
-from datetime import datetime, timedelta
+# ─── Custom Utility Imports ──────────────────────────────────────────────
+from utils.downloader import download_and_extract_disclosures
+from utils.login import google_blueprint
+from utils.desktop_notifs import notify_user  # type: ignore
 
 # Initilize Flask app
 app = Flask(__name__)
@@ -330,12 +326,12 @@ def get_stock_company_name(ticker):
     """Get company name from stock ticker using the stock_info dictionary"""
     return stock_info.get(ticker.upper(), f"{ticker.upper()} Corporation")
 
-# ------ REP/ PROFILE ROUTE -----
+# ------ REP/PROFILE ROUTE -----
 @app.route('/politician/<name>')
 def politician_profile(name):
     # Decode the URL-encoded name
     politician_name = name.replace('+', ' ')
-    print(f"🔍 Looking for politician: {politician_name}")
+    print(f"Looking for politician: {politician_name}")
     
     # Initialize data structures
     filings = []
@@ -505,7 +501,6 @@ def politician_profile(name):
                          google=google)
 
 # ------ DASHBOARD ROUTE -----
-
 @app.route('/dashboard')
 def dashboard():
     base_path = os.path.join(os.path.dirname(__file__), 'raw_data')
@@ -587,7 +582,6 @@ def disclosures_api():
         return {'error': 'No disclosures found'}, 404
 
     return jsonify(data)
-
 
 # ------ DISCLOSURE PROCESSING ROUTE -----
 @app.route('/disclosures')

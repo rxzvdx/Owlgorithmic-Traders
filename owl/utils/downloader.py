@@ -26,7 +26,7 @@ RAW_DATA_DIR = "raw_data"
 # Supported disclosure years
 VALID_YEARS = {'2021', '2022', '2023', '2024', '2025'}
 # Optional: subdirectory for House-specific files
-HOUSE_DIR = "House"
+HOUSE_DIR = "house"
 
 
 def download_and_extract_disclosures(year: str):

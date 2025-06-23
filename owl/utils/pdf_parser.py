@@ -147,8 +147,12 @@ def parse_pdf_for_debug(pdf_path: str):
         print(f"Amount: {amt}")
         print("-" * 40)
 
-if __name__ == "__main__":
-    # Example debug run against one PDF file
-    base = os.path.join(os.path.dirname(__file__), '..', '..', 'House')
-    sample_pdf = os.path.join(base, 'Banks_James E Hon', '2021', '20018018.pdf')
-    parse_pdf_for_debug(sample_pdf)
+# -------------------------------------------------------------------------
+# Added function for consistency with upstream orchestrator:
+# -------------------------------------------------------------------------
+def parse_transactions(pdf_path: str) -> list:
+    """
+    Alias for extract_trade_data_from_pdf so upstream code just
+    needs to call `parse_transactions`.
+    """
+    return extract_trade_data_from_pdf(pdf_path)
