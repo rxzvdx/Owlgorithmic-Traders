@@ -84,6 +84,20 @@ def extract_trade_data_from_pdf(pdf_path: str) -> list:
                 notif_date = date_parts[1] if len(date_parts) > 1 else None
                 amount_line = lines[i + 3]             # Next line has amount details
 
+                # --- FIX for swapped date/amount ---
+                is_date_regex = r"^\d{1,2}/\d{1,2}/\d{4}$"
+                # If notification date is missing and the amount line looks like a date, swap them
+                if notif_date is None and re.match(is_date_regex, amount_line.strip()):
+                    # The amount line was the notification date
+                    notif_date = amount_line.strip()
+                    # The real amount is on the next line.
+                    try:
+                        amount = lines[i + 4].replace(",", "")
+                    except IndexError:
+                        amount = "N/A"
+                else:
+                    amount = amount_line.replace(",", "")
+
                 trades.append({
                     "rep_name": rep_name,
                     "state_district": state_district,
@@ -92,7 +106,7 @@ def extract_trade_data_from_pdf(pdf_path: str) -> list:
                     "transaction_type": trans_type,
                     "transaction_date": trans_date,
                     "notification_date": notif_date,
-                    "amount": amount_line.replace(",", "")
+                    "amount": amount
                 })
                 # Advance past this block (4 lines + header)
                 i += 5

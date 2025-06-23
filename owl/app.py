@@ -337,16 +337,42 @@ def politician_profile(name):
     filings = []
     transactions = []
     stock_holdings = {}
+    detailed_trades = []  # NEW: for trades_cache.json
     
     # Process data from all years
     base_path = os.path.join(os.path.dirname(__file__), 'raw_data')
+    
+    # --- Load detailed trades from trades_cache.json ---
+    trades_cache_path = os.path.join(os.path.dirname(__file__), '..', 'term_logs', 'trades_cache.json')
+    try:
+        import json
+        with open(trades_cache_path, 'r', encoding='utf-8') as f:
+            trades_data = json.load(f)
+        # Try exact match, fallback to partial match
+        if politician_name in trades_data:
+            detailed_trades = trades_data[politician_name].get('transactions', [])
+        else:
+            # Fuzzy match: ignore underscores, spaces, and case, and require all name parts to be present
+            def normalize(s):
+                return s.replace('_', ' ').replace('.', '').lower()
+            norm_name_parts = [part for part in normalize(politician_name).split() if part]
+            best_key = None
+            for key in trades_data:
+                norm_key = normalize(key)
+                if all(part in norm_key for part in norm_name_parts):
+                    best_key = key
+                    break
+            if best_key:
+                detailed_trades = trades_data[best_key].get('transactions', [])
+    except Exception as e:
+        detailed_trades = []
     
     if not os.path.exists(base_path):
         print("raw_data directory not found")
         return render_template("politician_profile.html", 
                              politician={'name': politician_name, 'state_district': 'N/A'},
                              stats={'total_filings': 0, 'years_active': 0, 'total_transactions': 0, 'unique_stocks': 0},
-                             filings=[], transactions=[], stock_holdings=[], google=google)
+                             filings=[], transactions=[], stock_holdings=[], detailed_trades=[], google=google)
     
     # Process .txt files for filing information
     for year_folder in os.listdir(base_path):
@@ -498,6 +524,7 @@ def politician_profile(name):
                          filings=filings,
                          transactions=transactions,
                          stock_holdings=stock_holdings_list,
+                         detailed_trades=detailed_trades,
                          google=google)
 
 # ------ DASHBOARD ROUTE -----
