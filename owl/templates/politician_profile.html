@@ -112,6 +112,41 @@
     {% endif %}
   </div>
 
+  <!-- Detailed Trades Table from trades_cache.json -->
+  <div class="profile-section">
+    <h3>All Disclosed Trades</h3>
+    {% if detailed_trades %}
+    <div class="table-container">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Asset</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Type</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Transaction Date</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Notification Date</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">Amount</th>
+            <th style="border-bottom: 1px solid #444; padding: 8px; text-align: left;">State/District</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for trade in detailed_trades %}
+          <tr>
+            <td style="padding: 6px 8px;">{{ trade.asset }}</td>
+            <td style="padding: 6px 8px;">{{ trade.transaction_type }}</td>
+            <td style="padding: 6px 8px;">{{ trade.transaction_date }}</td>
+            <td style="padding: 6px 8px;">{{ trade.notification_date }}</td>
+            <td style="padding: 6px 8px;">{{ trade.amount }}</td>
+            <td style="padding: 6px 8px;">{{ trade.state_district }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p style="color: #ccc;">No detailed trades found for this politician.</p>
+    {% endif %}
+  </div>
+
   <!-- Stock Holdings Summary -->
   {% if stock_holdings %}
   <div class="profile-section">

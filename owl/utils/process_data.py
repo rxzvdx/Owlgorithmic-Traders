@@ -42,7 +42,7 @@ def build_cache():
     # load already-done set
     processed = set()
     if os.path.exists(LOG_FILE):
-        with open(LOG_FILE, "r") as f:
+        with open(LOG_FILE, "r", encoding="latin-1") as f:
             processed = set(line.strip() for line in f if line.strip())
 
     # gather every PDF that still needs parsing
