@@ -1,3 +1,4 @@
+<!-- header.html -->
 <!--
   Author(s):
     Antonio Rosado
@@ -10,20 +11,18 @@
   Last Update:
     Revised June 23, 2025
   Purpose:
-    Display a contact form for users to submit inquiries, which posts entries to a Google Sheets backend.
+    Site-wide header with navigation, theme toggle, and login/logout
 -->
 <div id="header">
   <div class="container">
-    <nav>
+    <nav class="header-nav">
       <img
         src="{{ url_for('static', filename='images/logo.png') }}"
         class="logo"
         alt="Owlgorithmic Traders Logo"
       >
-      <ul>
-        <li>
-          <button id="theme-toggle" aria-label="Toggle theme">🌓</button>
-        </li>
+      <ul class="nav-links">
+        <li><button id="theme-toggle" aria-label="Toggle theme">🌓</button></li>
         <li><a href="{{ url_for('index') }}#header">Home</a></li>
         <li><a href="{{ url_for('index') }}#about">About</a></li>
         <li><a href="{{ url_for('index') }}#services">Services</a></li>
@@ -32,7 +31,10 @@
 
         {% if google and google.authorized %}
           <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-          <li><a href="{{ url_for('favorites') }}">View My Favorites</a></li>
+          <li><a href="{{ url_for('favorites') }}">My Favorites</a></li>
+          <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+        {% else %}
+          <li><a href="{{ url_for('login') }}">Log In</a></li>
         {% endif %}
       </ul>
     </nav>

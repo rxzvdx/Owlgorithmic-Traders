@@ -1,54 +1,77 @@
+<!--
+  Author(s):
+    Antonio Rosado
+    Kashan Khan
+    Imad Khan
+    Alexander Schifferle
+    Mike Kheang
+  Assignment:
+    Senior Project (Summer 2025) – “favorites.html”
+  Last Update:
+    Revised June 23, 2025
+  Purpose:
+    Displays the user's favorite stocks and representatives, with tabs for each
+    and an option to download them as a PDF.
+-->
+
 {% extends "base.html" %}
 {% block title %}Your Favorites{% endblock %}
 
 {% block content %}
-<h2 class="title">Your Favorites</h2>
+<div class="container">
+  <a href="{{ url_for('recommendations_pdf') }}" class="btn pdf-download">
+    Download My Recommendations as PDF
+  </a>
 
-<div class="tabs-container">
-  <button class="tab-button active" onclick="showTab('stocks')">Favorite Stocks</button>
-  <button class="tab-button" onclick="showTab('reps')">Favorite Representatives</button>
-</div>
+  <h2 class="title">Your Favorites</h2>
 
-<!-- Favorite Stocks -->
-<div id="stocks" class="tab-content active-tab">
-  {% if favorites %}
-    <div class="stock-list">
+  <div class="tabs-container">
+    <button class="tab-button active" onclick="showTab('stocks')">
+      Favorite Stocks
+    </button>
+    <button class="tab-button" onclick="showTab('reps')">
+      Favorite Representatives
+    </button>
+  </div>
+
+  <!-- Favorite Stocks -->
+  <div id="stocks" class="tab-content active-tab">
+    {% if favorites %}
       {% for symbol in favorites %}
-        <div class="stock-card">
-          <form action="{{ url_for('view_chart', symbol=symbol) }}" method="get">
-            <button class="stock-button" type="submit">{{ symbol }}</button>
-          </form>
+        <div class="stock-item">
+          <a href="{{ url_for('view_chart', symbol=symbol) }}">{{ symbol }}</a>
         </div>
       {% endfor %}
-    </div>
-  {% else %}
-    <p style="text-align: center; color: #ccc;">You haven't added any favorite stocks yet.</p>
-  {% endif %}
-</div>
+    {% else %}
+      <p>You haven't added any favorite stocks yet.</p>
+    {% endif %}
+  </div>
 
-<!-- Favorite Representatives -->
-<div id="reps" class="tab-content">
-  {% if favorite_reps %}
-    <div class="stock-list">
-      {% for rep_name in favorite_reps %}
-        <div class="stock-card">
-          <form action="{{ url_for('politician_profile', name=rep_name.replace(' ', '+')) }}" method="get">
-            <button class="stock-button" type="submit">{{ rep_name }}</button>
-          </form>
+  <!-- Favorite Representatives -->
+  <div id="reps" class="tab-content">
+    {% if favorite_reps %}
+      {% for rep in favorite_reps %}
+        <div class="rep-item">
+          <a href="{{ url_for('politician_profile', name=rep) }}">{{ rep }}</a>
         </div>
       {% endfor %}
-    </div>
-  {% else %}
-    <p style="text-align: center; color: #ccc;">You haven't added any favorite representatives yet.</p>
-  {% endif %}
+    {% else %}
+      <p>You haven't added any favorite representatives yet.</p>
+    {% endif %}
+  </div>
 </div>
 
 <script>
   function showTab(tab) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
-    document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-content')
+      .forEach(el => el.classList.remove('active-tab'));
+    document.querySelectorAll('.tab-button')
+      .forEach(el => el.classList.remove('active'));
+
     document.getElementById(tab).classList.add('active-tab');
-    document.querySelector(`.tab-button[onclick="showTab('${tab}')"]`).classList.add('active');
+    document.querySelector(
+      `.tab-button[onclick="showTab('${tab}')"]`
+    ).classList.add('active');
   }
 </script>
 {% endblock %}

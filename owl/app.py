@@ -46,8 +46,38 @@ from utils.downloader import download_and_extract_disclosures
 from utils.login import google_blueprint
 from utils.desktop_notifs import notify_user  # type: ignore
 
+# ─── Report Lab Imports ──────────────────────────────────
+from io import BytesIO
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from flask_login import (
+    LoginManager, UserMixin,
+    login_user, login_required,
+    current_user, logout_user
+)
+from flask import send_file
+
 # Initilize Flask app
 app = Flask(__name__)
+# ── Flask-Login setup ──
+login_manager = LoginManager()
+login_manager.login_view = "google.login"
+login_manager.init_app(app)
+
+class User(UserMixin):
+    def __init__(self, id: str, email: str, name: str):
+        self.id = id
+        self.email = email
+        self.name = name
+
+# In-memory user store (replace with DB in production)
+user_store: dict[str, User] = {}
+
+@login_manager.user_loader
+def load_user(user_id: str):
+    return user_store.get(user_id)
+
 app.secret_key = "supersecretkey"
 
 # Register the Google OAuth blueprint under url_prefix
@@ -69,45 +99,50 @@ def index():
             return redirect(url_for("google.login"))
     return render_template('index.html', user_email=user_email, google=google)
 
+# ─── helper to fetch today’s price + % change ─────────────────────────────────
+def fetch_stock_data(symbols):
+    data = {}
+    for sym in symbols:
+        try:
+            # normalize BRK.B
+            yf_sym = 'BRK-B' if sym.upper() == 'BRK.B' else sym
+            t = yf.Ticker(yf_sym)
+            hist = t.history(period="1d")
+            if hist.empty:
+                continue
+            today = hist.iloc[-1]
+            close = today["Close"]
+            openp = today.get("Open", close)
+            pct   = (close - openp) / openp * 100 if openp else 0
+            data[sym] = {"price": close, "change": pct}
+        except Exception:
+            continue
+    return data
+
 # ------ OAUTH ROUTE -----
-# Login route intiates the Google OAuth process
+# Callback route for Google OAuth
 @app.route('/auth')
 def login():
-    session["after_login"] = True  # Temp flag to indicate that the user is trying to log in(for testing)
     if not google.authorized:
         return redirect(url_for('google.login'))
-    return redirect(url_for('index'))
 
-# Callback route for Google OAuth
-@oauth_authorized.connect_via(google_blueprint)
-def google_logged_in(blueprint, token):
-    if not token:
-        flash("Failed to log in with Google.", category="error")
-        return False
-    # Fetch user info from Google
-    resp = blueprint.session.get("/oauth2/v1/userinfo")
+    resp = google.get("/oauth2/v1/userinfo")
     if not resp.ok:
-        flash("Failed to fetch user info.", category="error")
-        return False
-    user_info = resp.json()
-    email = user_info["email"]
-    flash(f"Successfully signed in as {email}", category="success")
+        flash("Failed to fetch your Google profile.", "error")
+        return redirect(url_for("index"))
 
-    # Redirects user to index page after successful login
-    if session.pop("after_login", None):
-        @after_this_request
-        def redirect_after_login(response):
-            return redirect(url_for("index"))
+    info  = resp.json()
+    email = info["email"]
 
-    return True
+    user = user_store.get(email)
+    if not user:
+        user = User(id=email, email=email, name=info.get("name", ""))
+        user_store[email] = user
 
-# ------ LOGOUT ROUTE -----
-# Logout route clears the session and redirects to the login page
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash("You have been logged out.", "success")
-    return redirect(url_for('index'))
+    login_user(user)
+    flash(f"Signed in as {email}", "success")
+    return redirect(url_for("index"))
+
 
 # ------ DOWNLOAD ROUTE -----
 # Download routes will only work if the user is logged in
@@ -669,6 +704,138 @@ def create_plan():
         )
     flash("Your plan was created successfully.", "success")
     return redirect(url_for("dashboard"))
+
+@app.route('/favorites/pdf')
+@login_required
+def favorites_pdf():
+    # 1) load both lists from the session
+    favorites       = session.get('favorites', [])
+    favorite_reps   = session.get('favorite_reps', [])
+
+    # 2) build the PDF in memory
+    buffer = BytesIO()
+    doc    = SimpleDocTemplate(buffer, pagesize=(8.5 * 72, 11 * 72))
+    styles = getSampleStyleSheet()
+    story  = []
+
+    # Title
+    story.append(Paragraph(f"{current_user.name}'s Favorites", styles['Title']))
+    story.append(Spacer(1, 12))
+
+    # ─── Favorite Stocks ────────────────────────────────────────────────────────
+    story.append(Paragraph("Favorite Stocks", styles['Heading2']))
+    story.append(Spacer(1, 6))
+    stock_data = [["Symbol"]]
+    for symbol in favorites:
+        stock_data.append([symbol])
+
+    stock_tbl = Table(stock_data)
+    stock_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('TEXTCOLOR',   (0, 0), (-1, 0), colors.black),
+        ('GRID',        (0, 0), (-1, -1), 0.5, colors.grey),
+        ('FONTNAME',    (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('ALIGN',       (0, 0), (-1, 0), 'CENTER'),
+    ]))
+    story.append(stock_tbl)
+
+    # ─── Favorite Representatives ──────────────────────────────────────────────
+    if favorite_reps:
+        story.append(Spacer(1, 12))
+        story.append(Paragraph("Favorite Representatives", styles['Heading2']))
+        story.append(Spacer(1, 6))
+
+        rep_data = [["Representative"]]
+        for rep in favorite_reps:
+            rep_data.append([rep])
+
+        rep_tbl = Table(rep_data)
+        rep_tbl.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+            ('TEXTCOLOR',   (0, 0), (-1, 0), colors.black),
+            ('GRID',        (0, 0), (-1, -1), 0.5, colors.grey),
+            ('FONTNAME',    (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('ALIGN',       (0, 0), (-1, 0), 'CENTER'),
+        ]))
+        story.append(rep_tbl)
+
+    # 3) finalize and send
+    doc.build(story)
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"favorites_{current_user.id}.pdf",
+        mimetype='application/pdf'
+    )
+
+
+@app.route('/recommendations/pdf')
+@login_required
+def recommendations_pdf():
+    favs = session.get('favorites', [])
+    buffer = BytesIO()
+    doc    = SimpleDocTemplate(buffer, pagesize=(8.5*72, 11*72))
+    styles = getSampleStyleSheet()
+    story  = [
+        Paragraph(f"{current_user.name}'s Stock Recommendations", styles["Title"]),
+        Spacer(1,12)
+    ]
+
+    # Table header: include SMAs
+    rows = [["Symbol","Price","20d SMA","50d SMA","Recommendation"]]
+
+    for sym in favs:
+        try:
+            t    = yf.Ticker(sym)
+            hist = t.history(period="60d")      # need ≥50 days
+            if len(hist) < 20:
+                continue
+
+            close = hist["Close"].iloc[-1]
+            sma20 = hist["Close"].iloc[-20:].mean()
+            sma50 = hist["Close"].iloc[-50:].mean() if len(hist) >= 50 else None
+
+            # simple crossover rule
+            if sma50 and sma20 > sma50:
+                rec = "Buy"
+            else:
+                rec = "Hold"
+
+            rows.append([
+                sym,
+                f"${close:.2f}",
+                f"${sma20:.2f}",
+                f"${sma50:.2f}" if sma50 else "n/a",
+                rec
+            ])
+        except Exception:
+            rows.append([sym, "error", "error", "error", "n/a"])
+
+    tbl = Table(rows, hAlign="LEFT")
+    tbl.setStyle(TableStyle([
+        ("BACKGROUND",(0,0),(-1,0),colors.lightgrey),
+        ("GRID",       (0,0),(-1,-1),0.5,colors.grey),
+        ("FONTNAME",   (0,0),(-1,0),"Helvetica-Bold"),
+        ("ALIGN",      (1,1),(-1,-1),"CENTER"),
+    ]))
+    story.append(tbl)
+
+    doc.build(story)
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"recommendations_{current_user.id}.pdf",
+        mimetype="application/pdf"
+    )
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for('index'))
 
 # ------ MAIN -----
 if __name__ == '__main__':

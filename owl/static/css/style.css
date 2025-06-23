@@ -984,3 +984,132 @@ body {
 .favorite-btn:hover #starIcon {
     color: #ffd700;
 }
+
+/* style.css */
+#header .container {
+  display: flex;
+  flex-direction: column;
+}
+
+nav.header-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+nav.header-nav .logo {
+  height: 40px; /* or whatever fits */
+}
+
+nav.header-nav .nav-links {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav.header-nav .nav-links li a,
+nav.header-nav .nav-links li button {
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* ─── Favorites Page Styles ─────────────────────────────────────────────────── */
+/* PDF Download button */
+.btn.pdf-download {
+  display: inline-block;
+  margin: 1rem auto;
+  padding: 0.5rem 1rem;
+  background-color: #0f0;
+  color: #000;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  text-decoration: none;
+}
+.btn.pdf-download:hover {
+  opacity: 0.9;
+}
+
+/* User info text */
+.user-info {
+  text-align: center;
+  color: #0f0;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Tabs */
+.tabs-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.tab-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.tab-button.active {
+  background-color: #0f0;
+  color: #000;
+}
+.tab-button:hover {
+  background-color: #555;
+}
+
+/* Tab content panels */
+.tab-content {
+  display: none;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.tab-content.active-tab {
+  display: flex;
+}
+
+/* Stock & Rep items */
+.stock-item,
+.rep-item {
+  background-color: #222;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  min-width: 120px;
+  transition: transform 0.1s;
+}
+.stock-item:hover,
+.rep-item:hover {
+  transform: scale(1.05);
+}
+.stock-item a,
+.rep-item a {
+  color: #0f0;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.tab-content p {
+  color: #ccc;
+  text-align: center;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+nav.header-nav .logo {
+  flex-shrink: 0;        
+  height: 60px;          
+  width: auto;           
+  object-fit: contain;  
+}

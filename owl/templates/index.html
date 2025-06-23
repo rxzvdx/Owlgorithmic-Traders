@@ -27,20 +27,13 @@
       {% for y in ['2021', '2022', '2023', '2024', '2025'] %}
         <button class="btn year" type="submit" name="year" value="{{ y }}">
           <span class="year-label">{{ y }}</span>
-          <span class="year-desc">SEC Disclosures from {{ y }}<br>Source: https://disclosures-clerk.house.gov/</span>
+          <span class="year-desc">
+            SEC Disclosures from {{ y }}<br>
+            Source: https://disclosures-clerk.house.gov/
+          </span>
         </button>
       {% endfor %}
     </form>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class="flash-messages">
-          {% for category, msg in messages %}
-            <li class="{{ category }}">{{ msg }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
   {% endif %}
 </div>
 

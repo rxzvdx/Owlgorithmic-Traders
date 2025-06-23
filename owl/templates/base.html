@@ -52,29 +52,29 @@
             {% endif %}
         {% endwith %}
     </div>
+
     {% block content %}{% endblock %}
 
     <script src="{{ url_for('static', filename='js/stock-ticker.js') }}"></script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-        const toggle = document.getElementById("theme-toggle");
+          const toggle = document.getElementById("theme-toggle");
 
-        // Load saved theme
-        const saved = localStorage.getItem("theme");
-        if (saved === "light") {
-          document.body.classList.add("light-theme");
-        }
+          // Load saved theme
+          const saved = localStorage.getItem("theme");
+          if (saved === "light") {
+            document.body.classList.add("light-theme");
+          }
 
-        toggle?.addEventListener("click", () => {
-          document.body.classList.toggle("light-theme");
-          const current = document.body.classList.contains("light-theme") ? "light" : "dark";
-          localStorage.setItem("theme", current);
+          toggle?.addEventListener("click", () => {
+            document.body.classList.toggle("light-theme");
+            const current = document.body.classList.contains("light-theme") ? "light" : "dark";
+            localStorage.setItem("theme", current);
+          });
         });
-      });
     </script>
-    {% block scripts %}{% endblock %}
 
+    {% block scripts %}{% endblock %}
     
 </body>
 </html>
