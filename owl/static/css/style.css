@@ -108,6 +108,41 @@ nav ul li a:hover::after {
     transition: 0.5s;
 }
 
+/* Login/Logout button styles */
+.logout-btn {
+    background-color: #ff4f4f !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.logout-btn:hover {
+    background-color: #d93636 !important;
+}
+
+.logout-btn::after {
+    display: none !important;
+}
+
+.login-btn {
+    background-color: #00ff88 !important;
+    color: #121212 !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.login-btn:hover {
+    background-color: #00cc70 !important;
+}
+
+.login-btn::after {
+    display: none !important;
+}
+
 /* ---------- Hero ---------- */
 .header-content {
     margin-top: 40px;

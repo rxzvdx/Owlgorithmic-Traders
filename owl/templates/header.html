@@ -6,7 +6,7 @@
     Alexander Schifferle
     Mike Kheang
   Assignment:
-    Senior Project (Summer 2025) – “header.html”
+    Senior Project (Summer 2025) – "header.html"
   Last Update:
     Revised June 23, 2025
   Purpose:
@@ -33,6 +33,9 @@
         {% if google and google.authorized %}
           <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
           <li><a href="{{ url_for('favorites') }}">View My Favorites</a></li>
+          <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
+        {% else %}
+          <li><a href="{{ url_for('login') }}" class="login-btn">Login</a></li>
         {% endif %}
       </ul>
     </nav>
