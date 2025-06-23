@@ -1,8 +1,3 @@
-{% extends "base.html" %}
-
-{% block title %}{{ politician.name }} - Profile{% endblock %}
-
-{% block content %}
 <!--
   Author(s):
     Antonio Rosado
@@ -13,11 +8,16 @@
   Assignment:
     Senior Project (Summer 2025) – "politician_profile.html"
   Last Update:
-    Revised June 19, 2025
+    Revised June 23, 2025
   Purpose:
     Display detailed profile information for a specific politician including
     their filing history, transaction details, and statistics.
 -->
+
+{% extends "base.html" %}
+{% block title %}{{ politician.name }} - Profile{% endblock %}
+{% block content %}
+
 
 <div class="container">
   <!-- Profile Header -->

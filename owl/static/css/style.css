@@ -11,9 +11,54 @@ html {
 
 /* ---------- Theme ---------- */
 body.dark-theme {
-    background: #141414;
-    color: white;
+  background-color: #141414;
+  color: white;
 }
+
+body.light-theme {
+  background-color: #fdfdfd; /* Or any light background */
+}
+
+/* Revert inversion for media in light mode */
+body.light-theme,
+body.light-theme #services .page-section,
+body.light-theme .chart-view-container h2,
+body.light-theme .company-overview,
+body.light-theme .motto,
+body.light-theme .header-content ,
+body.light-theme nav ul li a,
+body.light-theme nav ul li,
+body.light-theme nav,
+body.light-theme header,
+body.light-theme html,
+body.light-theme ul,
+body.light-theme img,
+body.light-theme video,
+body.light-theme .logo {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+body.light-theme .company-overview {
+  background-color: #EBEBEB;
+  color: #EBEBEB;
+  border: 1px solid #ddd;
+}
+
+/* Smooth transition */
+body, body * {
+  transition: background-color 0.3s ease, color 0.3s ease, filter 0.3s ease;
+}
+
+/* Theme toggle button */
+#theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: inherit;
+  padding: 0 10px;
+}
+
 
 /* ---------- Header ---------- */
 #header {
