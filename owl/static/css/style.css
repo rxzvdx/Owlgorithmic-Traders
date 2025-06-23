@@ -102,6 +102,77 @@ nav ul li a:hover::after {
     margin-bottom: 30px;
 }
 
+/* ---------- Services ---------- */
+#services {
+  padding: 50px 0;
+  background-color: #141414;
+}
+
+.services-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 40px;
+  margin-top: 50px;
+}
+
+.service {
+  background: #1e1e1e;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #00ff88;
+  font-weight: bold;
+  font-size: 18px;
+  transition: transform 0.5s;
+}
+
+.service:hover {
+  transform: scale(1.05);
+}
+
+.service-title {
+  z-index: 2;
+  padding: 15px 0;
+  color: #fff;
+  margin-bottom: auto;
+  font-weight: bold;
+  font-size: 20px;
+
+}
+
+.service-layer {
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(rgba(0,0,0,0.6), #00ff88);
+  border-radius: 10px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  text-align: center;
+  font-size: 14px;
+  transition: height 0.5s;
+  color: #141414;
+}
+
+.service:hover .service-layer {
+  height: 100%;
+}
+
+.service-layer p {
+  font-size: 14px;
+  font-weight: normal;
+}
+
 /* ---------- Auth ---------- */
 .auth-buttons {
     display: flex;
