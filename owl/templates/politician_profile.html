@@ -21,23 +21,22 @@
 
 <div class="container">
   <!-- Profile Header -->
-  <div class="profile-header">
-  <h1 class="profile-name">{{ politician.name }}</h1>
-
-  <!-- Favorite Toggle Button, Centered -->
-  <form method="POST" action="{{ url_for('toggle_rep_favorite') }}" class="favorite-form">
-    <input type="hidden" name="rep_name" value="{{ politician.name }}">
-    <button type="submit" class="favorite-btn" id="repFavoriteBtn">
-      {% if politician.name in session.get('favorite_reps', []) %}
-        <span id="starIcon" style="color: gold;">★</span> Remove from Favorites
-      {% else %}
-        <span id="starIcon" style="color: #ccc;">☆</span> Add to Favorites
-      {% endif %}
-    </button>
-  </form>
-
-  <p class="profile-location">{{ politician.state_district }}</p>
-</div>
+  <div class="profile-header" style="text-align: center;">
+    <img id="profile-pic" src="{{ url_for('static', filename='profile_pics/' + politician.name.replace(' ', '_') + '.jpg') }}" alt="Profile picture" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #2ecc40; background: #e0e0e0; margin-bottom: 12px;" onerror="this.onerror=null;this.src='{{ url_for('static', filename='profile_pics/placeholder.svg') }}'">
+    <h1 class="profile-name">{{ politician.name }}</h1>
+    <!-- Favorite Toggle Button, Centered -->
+    <form method="POST" action="{{ url_for('toggle_rep_favorite') }}" class="favorite-form" style="display: inline-block;">
+      <input type="hidden" name="rep_name" value="{{ politician.name }}">
+      <button type="submit" class="favorite-btn" id="repFavoriteBtn">
+        {% if politician.name in session.get('favorite_reps', []) %}
+          <span id="starIcon" style="color: gold;">★</span> Remove from Favorites
+        {% else %}
+          <span id="starIcon" style="color: #ccc;">☆</span> Add to Favorites
+        {% endif %}
+      </button>
+    </form>
+    <p class="profile-location">{{ politician.state_district }}</p>
+  </div>
 
 
   <!-- Statistics Cards -->
