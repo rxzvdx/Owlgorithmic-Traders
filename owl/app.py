@@ -396,7 +396,6 @@ def politician_profile(name):
                             first = parts[2] if len(parts) > 2 else ''  # Column 2 is First name
                             last = parts[1] if len(parts) > 1 else ''   # Column 1 is Last name
                             current_name = f"{first} {last}".strip()
-                            
                             # More flexible name matching
                             if (current_name.lower() == politician_name.lower() or 
                                 politician_name.lower() in current_name.lower() or
@@ -434,7 +433,6 @@ def politician_profile(name):
                     first = member.findtext('First', default='')
                     last = member.findtext('Last', default='')
                     current_name = f"{first} {last}".strip()
-                    
                     # More flexible name matching
                     if (current_name.lower() == politician_name.lower() or 
                         politician_name.lower() in current_name.lower() or
@@ -466,7 +464,6 @@ def politician_profile(name):
                                     stock_holdings[ticker]['count'] += 1
                                     if transaction_data['date'] > stock_holdings[ticker]['last_date']:
                                         stock_holdings[ticker]['last_date'] = transaction_data['date']
-                                        
             except ET.ParseError:
                 print(f"Failed to parse XML: {xml_path}")
                 continue
