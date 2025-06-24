@@ -165,7 +165,7 @@ const stateMap = {
   let allData = [], uniqueNames = [], uniqueStates = [], uniqueTrans = [], uniqueYears = [];
 
   /**
-   * Renders table rows based on filtered data array.
+   * Renders grouped table rows based on filtered data array.
    */
   function renderRows(data) {
     const body = document.getElementById('disclosureBody');
@@ -174,20 +174,55 @@ const stateMap = {
       body.innerHTML = `<tr><td colspan="5">No data available.</td></tr>`;
       return;
     }
+    // Group by (name, state)
+    const groups = {};
     data.forEach(e => {
-      const rawType = e.transaction_type ?? e.type ?? '';
-      const displayType = typeMap[rawType] || rawType || 'Not Available';
-      const abbr = (e.state||'').slice(0,2).toUpperCase();
+      const key = `${e.name}|||${e.state}`;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(e);
+    });
+    Object.entries(groups).forEach(([key, filings], idx) => {
+      const [name, state] = key.split('|||');
+      const abbr = (state||'').slice(0,2).toUpperCase();
       const displayState = stateMap[abbr] || abbr;
+      // Summary row
       const tr = document.createElement('tr');
+      tr.className = 'group-summary';
       tr.innerHTML = `
-        <td><a href="/politician/${encodeURIComponent(e.name)}" class="politician-link">${e.name}</a></td>
+        <td><a href="/politician/${encodeURIComponent(name)}" class="politician-link">${name}</a></td>
         <td>${displayState}</td>
-        <td>${displayType}</td>
-        <td>${e.date}</td>
-        <td>${e.year}</td>
+        <td colspan="2">${filings.length} filings</td>
+        <td><button class="expand-btn" data-group="group${idx}">Show</button></td>
       `;
       body.appendChild(tr);
+      // Hidden detail rows
+      filings.forEach(filing => {
+        const rawType = filing.transaction_type ?? filing.type ?? '';
+        const displayType = typeMap[rawType] || rawType || 'Not Available';
+        const detailTr = document.createElement('tr');
+        detailTr.className = `group-detail group${idx}`;
+        detailTr.style.display = 'none';
+        detailTr.innerHTML = `
+          <td></td>
+          <td></td>
+          <td>${displayType}</td>
+          <td>${filing.date}</td>
+          <td>${filing.year}</td>
+        `;
+        body.appendChild(detailTr);
+      });
+    });
+    // Add expand/collapse logic
+    document.querySelectorAll('.expand-btn').forEach(btn => {
+      btn.onclick = function() {
+        const group = btn.getAttribute('data-group');
+        const details = document.querySelectorAll(`.group-detail.${group}`);
+        const expanded = details[0] && details[0].style.display !== 'none';
+        details.forEach(row => {
+          row.style.display = expanded ? 'none' : '';
+        });
+        btn.textContent = expanded ? 'Show' : 'Hide';
+      };
     });
   }
 
