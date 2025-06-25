@@ -6,7 +6,7 @@
  *    Alexander Schifferle
  *    Mike Kheang
  * Assignment:
- *    Senior Project (Summer 2025) – “stock-ticker.js”
+ *    Senior Project (Summer 2025) – "stock-ticker.js"
  * Last Update:
  *    Revised June 19, 2025
  * Purpose:
@@ -78,6 +78,12 @@ const SYMBOL_TO_DOMAIN = {
     'AMD': 'amd.com'
 };
 
+// Global variables for persistent animation
+let tickerAnimationId = null;
+let currentPosition = 0;
+let loopWidth = 0;
+let animationSpeed = 1; // pixels per frame
+
 // Function to fetch stock data
 async function fetchStockData(symbol) {
     try {
@@ -146,16 +152,53 @@ async function updateTickerPrices() {
     });
 }
 
+// Function to save animation state
+function saveAnimationState() {
+    if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('tickerPosition', currentPosition.toString());
+        sessionStorage.setItem('tickerLoopWidth', loopWidth.toString());
+        sessionStorage.setItem('tickerLastUpdate', Date.now().toString());
+    }
+}
+
+// Function to load animation state
+function loadAnimationState() {
+    if (typeof sessionStorage !== 'undefined') {
+        const savedPosition = sessionStorage.getItem('tickerPosition');
+        const savedLoopWidth = sessionStorage.getItem('tickerLoopWidth');
+        const lastUpdate = sessionStorage.getItem('tickerLastUpdate');
+        
+        if (savedPosition && savedLoopWidth && lastUpdate) {
+            const timeDiff = Date.now() - parseInt(lastUpdate);
+            // If less than 5 minutes have passed, restore position
+            if (timeDiff < 300000) {
+                currentPosition = parseFloat(savedPosition);
+                loopWidth = parseFloat(savedLoopWidth);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 // Function to initialize ticker DOM and animation
 async function initializeTicker() {
     const tickerContainer = document.getElementById('stock-ticker');
     if (!tickerContainer) return;
+    
+    // Check if ticker is already initialized
+    if (tickerContainer.dataset.initialized === 'true') {
+        return;
+    }
+    
     // Remove CSS animation
     tickerContainer.style.animation = 'none';
     tickerContainer.innerHTML = '';
+    
     // Fetch initial data
     const stockDataPromises = STOCKS.map(symbol => fetchStockData(symbol));
     const stockDataResults = await Promise.allSettled(stockDataPromises);
+    
     // Create ticker items
     const tickerItems = [];
     stockDataResults.forEach((result, index) => {
@@ -165,31 +208,79 @@ async function initializeTicker() {
             tickerContainer.appendChild(tickerItem);
         }
     });
+    
     // Duplicate for seamless loop
     tickerItems.forEach(item => {
         const clone = item.cloneNode(true);
         tickerContainer.appendChild(clone);
     });
+    
     // Set width for smooth scroll
     const tickerWidth = Array.from(tickerContainer.children).reduce((acc, el) => acc + el.offsetWidth, 0);
     tickerContainer.style.width = tickerWidth + 'px';
+    loopWidth = tickerWidth / 2;
+    
+    // Mark as initialized
+    tickerContainer.dataset.initialized = 'true';
+    
+    // Load saved position or start from beginning
+    const hasSavedState = loadAnimationState();
+    if (!hasSavedState) {
+        currentPosition = 0;
+    }
+    
+    // Apply current position
+    tickerContainer.style.transform = `translateX(${currentPosition}px)`;
+    
     // Start JS animation
-    startTickerAnimation(tickerContainer, tickerWidth / 2);
+    startTickerAnimation(tickerContainer);
 }
 
 // JS-based seamless ticker animation
-function startTickerAnimation(container, loopWidth) {
-    let pos = 0;
-    function step() {
-        pos -= 1; // px per frame
-        if (Math.abs(pos) >= loopWidth) {
-            pos = 0;
-        }
-        container.style.transform = `translateX(${pos}px)`;
-        requestAnimationFrame(step);
+function startTickerAnimation(container) {
+    // Stop any existing animation
+    if (tickerAnimationId) {
+        cancelAnimationFrame(tickerAnimationId);
     }
-    requestAnimationFrame(step);
+    
+    function step() {
+        currentPosition -= animationSpeed;
+        if (Math.abs(currentPosition) >= loopWidth) {
+            currentPosition = 0;
+        }
+        container.style.transform = `translateX(${currentPosition}px)`;
+        
+        // Save state periodically
+        if (Math.abs(currentPosition) % 100 < animationSpeed) {
+            saveAnimationState();
+        }
+        
+        tickerAnimationId = requestAnimationFrame(step);
+    }
+    
+    tickerAnimationId = requestAnimationFrame(step);
 }
+
+// Handle page visibility changes to pause/resume animation
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        if (tickerAnimationId) {
+            cancelAnimationFrame(tickerAnimationId);
+            tickerAnimationId = null;
+        }
+        saveAnimationState();
+    } else {
+        const tickerContainer = document.getElementById('stock-ticker');
+        if (tickerContainer && tickerContainer.dataset.initialized === 'true') {
+            startTickerAnimation(tickerContainer);
+        }
+    }
+});
+
+// Handle page unload to save state
+window.addEventListener('beforeunload', () => {
+    saveAnimationState();
+});
 
 // Initialize ticker and set up price updates
 document.addEventListener('DOMContentLoaded', () => {
