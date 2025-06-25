@@ -58,32 +58,32 @@ How to Use
       1. Navigate to Contact in the nav bar
       2. Submit an inquiry
 
-Where Files Go
-Artifact
-	{year}.zip
-	   Browser download
-	{year}FD.txt
-	   Browser download
-	/raw_data/{year}_data/*.xml
-	   Server-side extracted XML disclosures
-	/house/{Last_First}/{year}/{DocID}.pdf
-	   Per-Rep. PDF folder on server
-	/term_logs
-	   download_log.txt & failed_downloads.txt
+	Where Files Go
+	Artifact
+		{year}.zip
+		   Browser download
+		{year}FD.txt
+		   Browser download
+		/raw_data/{year}_data/*.xml
+		   Server-side extracted XML disclosures
+		/house/{Last_First}/{year}/{DocID}.pdf
+		   Per-Rep. PDF folder on server
+		/term_logs
+		   download_log.txt & failed_downloads.txt
+		
 	
-
-Troubleshooting
-Issues:
-	“Download failed” flash
-	   Check internet connection or year availability. Verify year availability. Ensure you’re logged in.
-	“Session expired” during Google OAuth
-	   Clear cookies, re-login; make sure OAUTHLIB_INSECURE_TRANSPORT=1 in dev.
-	Charts won’t load (TradingView)
-	   Confirm secure HTTP(S); check console for widget errors.
-	Dashboard filters not responding
-	   Ensure JS is loading (static/js/); check browser console.
-	App does not start
-	   Run pip install -r requirements.txt, then python app.py
+	Troubleshooting
+	Issues:
+		“Download failed” flash
+		   Check internet connection or year availability. Verify year availability. Ensure you’re logged in.
+		“Session expired” during Google OAuth
+		   Clear cookies, re-login; make sure OAUTHLIB_INSECURE_TRANSPORT=1 in dev.
+		Charts won’t load (TradingView)
+		   Confirm secure HTTP(S); check console for widget errors.
+		Dashboard filters not responding
+		   Ensure JS is loading (static/js/); check browser console.
+		App does not start
+		   Run pip install -r requirements.txt, then python app.py
 
 Part II: Developer Guide
 
@@ -100,76 +100,77 @@ Tech Stack & Dependencies
 
 Project Structure 
           
-   Owlgorithmic Traders/
-   ├── .vscode/
-   │ └── … (VS Code settings)
-   ├── house/                                         ← Per-representative PDF folders
-   ├── old script/                                 ← Archive of legacy code
-   ├── owl/                                         ← Main application package
-   │ ├── plans/                                         ← Project notes & roadmaps
-   │ ├── raw_data/                                 ← Extracted metadata & XML disclosures
-   │ ├── schema/
-   │ │ ├── init_db.sql                         ← Create database
-   │ │ ├── init_reps.sql                         ← Create representatives table
-   │ │ ├── init_trades.sql                        ← Create trades table
-   │ │ └── init_users.sql                         ← Create users table
-   │ ├── static/
-   │ │ ├── css/
-   │ │ │ └── style.css
-   │ │ ├── images/                                 ← Logos & icons
-   │ │ ├── js/
-   │ │ │ └── stock-ticker.js
-   │ │ └── profile_pics/                         ← Legislator avatars
-   │ ├── templates/
-   │ │ ├── base.html
-   │ │ ├── chart_list.html
-   │ │ ├── chart_view.html
-   │ │ ├── contact.html
-   │ │ ├── dashboard.html
-   │ │ ├── disclosures.html
-   │ │ ├── favorites.html
-   │ │ ├── header.html
-   │ │ ├── index.html
-   │ │ └── politician_profile.html
-   │ ├── utils/
-   │ │ ├── pycache/
-   │ │ ├── desktop_notifs.py                         ← Desktop notification helper
-   │ │ ├── download_politician_images.py        ← Bulk portrait fetcher
-   │ │ ├── downloader.py                         ← ZIP/TXT downloader & extractor
-   │ │ ├── fetch.py                                 ← Catalog downloaded PDFs
-   │ │ ├── load_reps.py                         ← Populate representatives table
-   │ │ ├── load_trades.py                         ← Populate trades table
-   │ │ ├── login.py                                 ← Google OAuth blueprint
-   │ │ ├── pdf_parser.py                         ← Extract trade data from PDFs
-   │ │ └── process_data.py                         ← Clean & transform disclosures
-   │ ├── app.py ← Flask application entry point
-   │ └── stock_bot.py                                 ← (Legacy launcher script)
-   ├── term_logs/
-   │ ├── download_log.txt                         ← Download activity log
-   │ ├── failed_downloads.txt                 ← Download error log
-   │ └── processed.txt                         ← Pre-parsed CSV tracker
-   ├── trades_cache.json                         ← Cached trade/price data
-   ├── .gitignore
-   └── requirements.txt                         ← Python dependencies
+	   Owlgorithmic Traders/
+	   ├── .vscode/
+	   │ └── … (VS Code settings)
+	   ├── house/                                         ← Per-representative PDF folders
+	   ├── old script/                                 ← Archive of legacy code
+	   ├── owl/                                         ← Main application package
+	   │ ├── plans/                                         ← Project notes & roadmaps
+	   │ ├── raw_data/                                 ← Extracted metadata & XML disclosures
+	   │ ├── schema/
+	   │ │ ├── init_db.sql                         ← Create database
+	   │ │ ├── init_reps.sql                         ← Create representatives table
+	   │ │ ├── init_trades.sql                        ← Create trades table
+	   │ │ └── init_users.sql                         ← Create users table
+	   │ ├── static/
+	   │ │ ├── css/
+	   │ │ │ └── style.css
+	   │ │ ├── images/                                 ← Logos & icons
+	   │ │ ├── js/
+	   │ │ │ └── stock-ticker.js
+	   │ │ └── profile_pics/                         ← Legislator avatars
+	   │ ├── templates/
+	   │ │ ├── base.html
+	   │ │ ├── chart_list.html
+	   │ │ ├── chart_view.html
+	   │ │ ├── contact.html
+	   │ │ ├── dashboard.html
+	   │ │ ├── disclosures.html
+	   │ │ ├── favorites.html
+	   │ │ ├── header.html
+	   │ │ ├── index.html
+	   │ │ └── politician_profile.html
+	   │ ├── utils/
+	   │ │ ├── pycache/
+	   │ │ ├── desktop_notifs.py                         ← Desktop notification helper
+	   │ │ ├── download_politician_images.py        ← Bulk portrait fetcher
+	   │ │ ├── downloader.py                         ← ZIP/TXT downloader & extractor
+	   │ │ ├── fetch.py                                 ← Catalog downloaded PDFs
+	   │ │ ├── load_reps.py                         ← Populate representatives table
+	   │ │ ├── load_trades.py                         ← Populate trades table
+	   │ │ ├── login.py                                 ← Google OAuth blueprint
+	   │ │ ├── pdf_parser.py                         ← Extract trade data from PDFs
+	   │ │ └── process_data.py                         ← Clean & transform disclosures
+	   │ ├── app.py ← Flask application entry point
+	   │ └── stock_bot.py                                 ← (Legacy launcher script)
+	   ├── term_logs/
+	   │ ├── download_log.txt                         ← Download activity log
+	   │ ├── failed_downloads.txt                 ← Download error log
+	   │ └── processed.txt                         ← Pre-parsed CSV tracker
+	   ├── trades_cache.json                         ← Cached trade/price data
+	   ├── .gitignore
+	   └── requirements.txt                         ← Python dependencies
 
 Setup Instructions
-   Bash
-      * git clone https://github.com/rxzvdx/Owlgorithmic-Traders.git
-      * cd owl
-      * python3 -m venv venv && source venv/bin/activate
-      * pip install -r requirements.txt
-      * export OAUTHLIB_INSECURE_TRANSPORT=1
-      * export FLASK_APP=app.py
-      * flask run
-      * # or
-      * python app.py
 
-   AWS EC2 UBUNTU
-   * sudo apt update && sudo apt install python3-pip python3-venv -y
-   * python3 -m venv venv && source venv/bin/activate
-   * pip install -r requirements.txt
-   * ufw allow 5000
-   * flask run --host 0.0.0.0
+	   Bash
+	      * git clone https://github.com/rxzvdx/Owlgorithmic-Traders.git
+	      * cd owl	
+	      * python3 -m venv venv && source venv/bin/activate
+	      * pip install -r requirements.txt
+	      * export OAUTHLIB_INSECURE_TRANSPORT=1
+	      * export FLASK_APP=app.py
+	      * flask run
+	      * # or
+	      * python app.py
+	
+	   AWS EC2 UBUNTU
+		   * sudo apt update && sudo apt install python3-pip python3-venv -y
+		   * python3 -m venv venv && source venv/bin/activate
+		   * pip install -r requirements.txt
+		   * ufw allow 5000
+		   * flask run --host 0.0.0.0
         
 
 
