@@ -4,7 +4,8 @@ ____________________________________________________________
 Table of Contents
 
 Part I: User Guide                                       	3
-	Owlgorithmic Traders Financial Disclosure Viewer        3
+	
+ 	Owlgorithmic Traders Financial Disclosure Viewer        3
 	Project Source Code                                     3
 	How to Use                                              3
 	Where Files Go                                          5
