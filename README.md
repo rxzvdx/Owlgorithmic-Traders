@@ -60,7 +60,8 @@ How to Use
       1. Navigate to Contact in the nav bar
       2. Submit an inquiry
 
-	Where Files Go
+Where Files Go
+
 	Artifact
 		{year}.zip
 		   Browser download
