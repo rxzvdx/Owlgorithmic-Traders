@@ -20,7 +20,9 @@ ____________________________________________________________
 
 
 Part I: User Guide
+
 Owlgorithmic Traders Financial Disclosure Viewer
+
 A web application that allows users to download U.S. Congressional financial disclosures by year (2021–2025) via a simple GUI. Will then provide raw data as well as visual representation via graphs.
 
 
