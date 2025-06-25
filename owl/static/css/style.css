@@ -21,6 +21,8 @@ body.light-theme {
 
 /* Revert inversion for media in light mode */
 body.light-theme,
+body.light-theme .hero-title,
+body.light-theme .hero-subtext,
 body.light-theme #services .page-section,
 body.light-theme .chart-view-container h2,
 body.light-theme .company-overview,
